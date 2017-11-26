@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">UseSdkExample</string>
+    <string name="user_name">User Name</string>
+    <string name="password">Password</string>
+    <string name="server_id">Sever Id</string>
+    <string name="sign_in">Sign In</string>
+    <string name="remember_me">Remember me</string>
+    <string name="load_credentials">Load last credentials</string>
+</resources>
