@@ -22,19 +22,19 @@ class ClientPresenter {
 
     private Client client =  TornadoClient.getInstance();
 
-    public void start(Context context) {
+    void start(Context context) {
         client.start(new TornadoConfig.Builder(context, clientCallbacks).build());
     }
 
-    public void stop() {
+    void stop() {
         client.stop();
     }
 
-    public void signIn(String userName, String password, String serverId) {
+    void signIn(String userName, String password, String serverId) {
         client.signIn(userName, password, serverId, UserState.ONLINE);
     }
 
-    public Boolean isSignedIn() {
+    Boolean isSignedIn() {
         return client.isSignedIn();
     }
 
