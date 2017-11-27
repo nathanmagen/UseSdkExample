@@ -6,4 +6,8 @@
     <string name="sign_in">Sign In</string>
     <string name="remember_me">Remember me</string>
     <string name="load_credentials">Load last credentials</string>
+    <string name="one">One</string>
+    <string name="two">Two</string>
+    <string name="three">Three</string>
+    <string name="four">Four</string>
 </resources>

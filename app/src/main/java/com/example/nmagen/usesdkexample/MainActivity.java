@@ -1,6 +1,7 @@
 package com.example.nmagen.usesdkexample;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,7 @@ import static android.os.SystemClock.sleep;
 public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName() + "_NatesLog";
     private static final String SIGNED_IN_MSG = "Signed in";
+    private static final String ALREADY_SIGNED_IN_MSG = "Already signed in";
     private static final String ERR_SIGN_IN  = "There was a problem signing in";
 
     ClientPresenter clientPresenter = new ClientPresenter();
@@ -58,12 +60,10 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-
-
     public void onClickSignIn(View view) {
         if (clientPresenter.isSignedIn()) {
-            TextView textView = findViewById(R.id.textViewMsg2user);
-            textView.setText("Already signed in");
+           putMessage(ALREADY_SIGNED_IN_MSG);
+           startFourButtons();
         }
         else {
             EditText userNameView = findViewById(R.id.userName);
@@ -90,15 +90,21 @@ public class MainActivity extends AppCompatActivity {
             }
             else {
                 putMessage(SIGNED_IN_MSG);
+                startFourButtons();
             }
         }
-
     }
 
     private void putMessage(String msg) {
         TextView textView = findViewById(R.id.textViewMsg2user);
         textView.setText(msg);
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    }
+
+    private void startFourButtons() {
+        sleep(1000);
+        Intent intent = new Intent(this, FourButtonsActivity.class);
+        startActivity(intent);
     }
 }
 
