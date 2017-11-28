@@ -21,6 +21,7 @@
         <activity
             android:name=".FourButtonsActivity"
             android:parentActivityName=".MainActivity" />
+        <activity android:name=".GroupListActivity"></activity>
     </application>
 
 </manifest>
