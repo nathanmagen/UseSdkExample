@@ -1,4 +1,4 @@
-package com.example.nmagen.usesdkexample;
+package com.example.nmagen.usesdkexample.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.MobileTornado.sdk.model.data.Group;
+import com.example.nmagen.usesdkexample.R;
 
 import java.util.List;
 
@@ -13,10 +14,10 @@ import java.util.List;
  * Created by nmagen on 28/11/2017.
  */
 
-class ListToViewAdapter extends RecyclerView.Adapter {
+public class ListToViewAdapter extends RecyclerView.Adapter {
     private List<Group> groupList;
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
         ViewHolder(TextView tv) {
             super(tv);
@@ -24,7 +25,7 @@ class ListToViewAdapter extends RecyclerView.Adapter {
         }
     }
 
-    ListToViewAdapter(List<Group> gList) {
+    public ListToViewAdapter(List<Group> gList) {
         groupList = gList;
     }
 

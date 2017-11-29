@@ -1,4 +1,4 @@
-package com.example.nmagen.usesdkexample;
+package com.example.nmagen.usesdkexample.presenters;
 
 import android.content.Context;
 import android.util.Log;
@@ -13,7 +13,7 @@ import com.MobileTornado.sdk.model.data.UserState;
  * Created by nmagen on 26/11/2017.
  */
 
-class ClientPresenter {
+public class ClientPresenter {
     private static final String LOG_TAG = "Presenter_NatesLog";
     private static final String START_MSG = "Client started";
     private static final String SIGNED_IN_MSG = "Signed in";
@@ -22,19 +22,19 @@ class ClientPresenter {
 
     private Client client =  TornadoClient.getInstance();
 
-    void start(Context context) {
+    public void start(Context context) {
         client.start(new TornadoConfig.Builder(context, clientCallbacks).build());
     }
 
-    void stop() {
+    public void stop() {
         client.stop();
     }
 
-    void signIn(String userName, String password, String serverId) {
+    public void signIn(String userName, String password, String serverId) {
         client.signIn(userName, password, serverId, UserState.ONLINE);
     }
 
-    Boolean isSignedIn() {
+    public Boolean isSignedIn() {
         return client.isSignedIn();
     }
 

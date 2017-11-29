@@ -1,4 +1,4 @@
-package com.example.nmagen.usesdkexample;
+package com.example.nmagen.usesdkexample.presenters;
 
 import com.MobileTornado.sdk.TornadoClient;
 import com.MobileTornado.sdk.model.ContactsModule;
@@ -10,11 +10,11 @@ import java.util.List;
  * Created by nmagen on 28/11/2017.
  */
 
-class GroupPresenter {
+public class GroupPresenter {
     private ContactsModule contactsModule = TornadoClient.getInstance().getContactsModule();
     private List<Group> groupList = contactsModule.getGroups();
 
-    List<Group> getGroupList() {
+    public List<Group> getGroupList() {
         return groupList;
     }
 }

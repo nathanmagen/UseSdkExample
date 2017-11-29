@@ -1,4 +1,4 @@
-package com.example.nmagen.usesdkexample;
+package com.example.nmagen.usesdkexample.activities;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.example.nmagen.usesdkexample.R;
 
 public class FourButtonsActivity extends AppCompatActivity {
     private static final String TEXT_PRELIM = "I'm number ";

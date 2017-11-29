@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:windowSoftInputMode="stateVisible">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,9 +19,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".FourButtonsActivity"
-            android:parentActivityName=".MainActivity" />
-        <activity android:name=".GroupListActivity"></activity>
+            android:name=".activities.FourButtonsActivity"
+            android:parentActivityName=".activities.MainActivity" />
+        <activity android:name=".activities.GroupListActivity"></activity>
     </application>
 
 </manifest>

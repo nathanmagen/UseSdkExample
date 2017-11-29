@@ -1,4 +1,4 @@
-package com.example.nmagen.usesdkexample;
+package com.example.nmagen.usesdkexample.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +14,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.example.nmagen.usesdkexample.R;
+import com.example.nmagen.usesdkexample.presenters.ClientPresenter;
+import com.example.nmagen.usesdkexample.presenters.PresentersManager;
+
 import static android.os.SystemClock.sleep;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String ALREADY_SIGNED_IN_MSG = "Already signed in";
     private static final String ERR_SIGN_IN  = "There was a problem signing in";
 
+    // PresentersManager presentersManager = new PresentersManager();
     ClientPresenter clientPresenter = new ClientPresenter();
 
     @Override
