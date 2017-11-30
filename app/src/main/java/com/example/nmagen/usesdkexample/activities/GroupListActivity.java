@@ -6,7 +6,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.nmagen.usesdkexample.adapters.ListToViewAdapter;
@@ -48,13 +47,8 @@ public class GroupListActivity extends AppCompatActivity {
                     view.findViewById(R.id.pttButton).setEnabled(true);
                     view.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                 }
-                else {
-                    // un select procedure, consider moving to private method
-                    clickedGroup.setUnSelected();
-                    view.findViewById(R.id.pttButton).setEnabled(false);
-                    view.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                    view.setClickable(true);
-                }
+
+                // un selecting all the rest of the groups in the list
                 int listSize = groupList.size();
                 for (int i = 0; i < listSize; i++) {
                     if (position != i) {
