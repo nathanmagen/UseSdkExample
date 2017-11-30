@@ -12,4 +12,5 @@
     <string name="four">Four</string>
     <string name="groups">Groups</string>
     <string name="ptt_text">PTT</string>
+    <string name="call_text">call</string>
 </resources>

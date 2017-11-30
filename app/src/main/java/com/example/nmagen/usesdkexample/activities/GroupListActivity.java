@@ -6,6 +6,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.nmagen.usesdkexample.adapters.ListToViewAdapter;
@@ -44,7 +45,7 @@ public class GroupListActivity extends AppCompatActivity {
                 if (!clickedGroup.isSelected()) {
                     // select procedure, consider moving to private method
                     clickedGroup.setSelected();
-                    view.findViewById(R.id.pttButton).setEnabled(true);
+                    view.findViewById(R.id.callButton).setEnabled(true);
                     view.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                 }
 
@@ -55,7 +56,7 @@ public class GroupListActivity extends AppCompatActivity {
                         groupList.get(i).setUnSelected();
                         View v = recyclerView.getChildAt(i);
                         v.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                        v.findViewById(R.id.pttButton).setEnabled(false);
+                        v.findViewById(R.id.callButton).setEnabled(false);
                         v.setClickable(true);
                     }
                 }
@@ -68,9 +69,19 @@ public class GroupListActivity extends AppCompatActivity {
         }));
     }
 
+    public void onCallClick(View view) {
+        int pos = (int) view.getTag();
+        AppGroup ag = groupList.get(pos);
+        Toast.makeText(this, "Call to " + ag.getGroup().getDisplayName(), Toast.LENGTH_SHORT).show();
+        Button pttButton = (Button) findViewById(R.id.pttButton);
+        pttButton.setEnabled(true);
+        pttButton.setTag(pos);
+    }
+
     public void onPttClick(View view) {
         int pos = (int) view.getTag();
         AppGroup ag = groupList.get(pos);
-        Toast.makeText(this, "PTT of " + ag.getGroup().getDisplayName(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "PTT to " + ag.getGroup().getDisplayName(), Toast.LENGTH_SHORT).show();
+        view.setEnabled(false);
     }
 }

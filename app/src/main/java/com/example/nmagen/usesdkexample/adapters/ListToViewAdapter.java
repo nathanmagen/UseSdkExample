@@ -21,11 +21,11 @@ public class ListToViewAdapter extends RecyclerView.Adapter {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView groupNameView;
-        public Button pttButton;
+        public Button callButton;
         ViewHolder(View v) {
             super(v);
             groupNameView = v.findViewById(R.id.groupName);
-            pttButton = v.findViewById(R.id.pttButton);
+            callButton = v.findViewById(R.id.callButton);
         }
     }
 
@@ -43,8 +43,8 @@ public class ListToViewAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ViewHolder lHolder = (ViewHolder)holder;
         lHolder.groupNameView.setText(groupList.get(position).getGroup().getDisplayName());
-        lHolder.pttButton.setTag(position);
-        lHolder.pttButton.setEnabled(false);
+        lHolder.callButton.setTag(position);
+        lHolder.callButton.setEnabled(false);
     }
 
     @Override
