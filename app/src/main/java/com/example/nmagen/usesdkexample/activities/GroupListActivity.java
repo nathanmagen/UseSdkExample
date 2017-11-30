@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import com.MobileTornado.sdk.model.data.Group;
 import com.example.nmagen.usesdkexample.adapters.ListToViewAdapter;
 import com.example.nmagen.usesdkexample.R;
+import com.example.nmagen.usesdkexample.data.AppGroup;
 import com.example.nmagen.usesdkexample.presenters.GroupPresenter;
 import com.example.nmagen.usesdkexample.presenters.PresentersManager;
 
@@ -16,7 +17,7 @@ import java.util.List;
 public class GroupListActivity extends AppCompatActivity {
     private PresentersManager presentersManager = PresentersManager.getInstance();
     private GroupPresenter groupPresenter = presentersManager.getGroupPresenter();
-    private List<Group> groupList = groupPresenter.getGroupList();
+    private List<AppGroup> groupList = groupPresenter.getGroupList();
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;

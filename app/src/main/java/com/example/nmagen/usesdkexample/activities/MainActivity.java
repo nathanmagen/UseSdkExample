@@ -21,13 +21,13 @@ import com.example.nmagen.usesdkexample.presenters.PresentersManager;
 import static android.os.SystemClock.sleep;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String LOG_TAG = MainActivity.class.getSimpleName() + "_NatesLog";
+    public static final String LOG_TAG = MainActivity.class.getSimpleName() + "_NatesLog";
     private static final String SIGNED_IN_MSG = "Signed in";
     private static final String ALREADY_SIGNED_IN_MSG = "Already signed in";
     private static final String ERR_SIGN_IN  = "There was a problem signing in";
 
-    // PresentersManager presentersManager = new PresentersManager();
-    ClientPresenter clientPresenter = new ClientPresenter();
+    PresentersManager presentersManager = PresentersManager.getInstance();
+    ClientPresenter clientPresenter = presentersManager.getClientPresenter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
             }
             else {
                 putMessage(SIGNED_IN_MSG);
+                presentersManager.initModules();
                 startFourButtons();
             }
         }

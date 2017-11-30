@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.MobileTornado.sdk.model.data.Group;
 import com.example.nmagen.usesdkexample.R;
+import com.example.nmagen.usesdkexample.data.AppGroup;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
  */
 
 public class ListToViewAdapter extends RecyclerView.Adapter {
-    private List<Group> groupList;
+    private List<AppGroup> groupList;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
@@ -25,7 +26,7 @@ public class ListToViewAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public ListToViewAdapter(List<Group> gList) {
+    public ListToViewAdapter(List<AppGroup> gList) {
         groupList = gList;
     }
 
@@ -39,7 +40,7 @@ public class ListToViewAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ViewHolder lHolder = (ViewHolder)holder;
-        lHolder.textView.setText(groupList.get(position).getDisplayName());
+        lHolder.textView.setText(groupList.get(position).getGroup().getDisplayName());
     }
 
     @Override
