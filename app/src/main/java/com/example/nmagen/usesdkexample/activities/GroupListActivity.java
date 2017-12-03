@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 import com.example.nmagen.usesdkexample.adapters.ListToViewAdapter;
 import com.example.nmagen.usesdkexample.R;
 import com.example.nmagen.usesdkexample.data.AppGroup;
+import com.example.nmagen.usesdkexample.presenters.CallPresenter;
 import com.example.nmagen.usesdkexample.presenters.GroupPresenter;
 import com.example.nmagen.usesdkexample.presenters.PresentersManager;
 
@@ -19,9 +21,11 @@ import java.util.List;
 
 import listeners.RecyclerTouchListener;
 
+
 public class GroupListActivity extends AppCompatActivity {
     private PresentersManager presentersManager = PresentersManager.getInstance();
     private GroupPresenter groupPresenter = presentersManager.getGroupPresenter();
+    private CallPresenter callPresenter = presentersManager.getCallPresenter();
     private List<AppGroup> groupList = groupPresenter.getGroupList();
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
@@ -67,12 +71,32 @@ public class GroupListActivity extends AppCompatActivity {
 
             }
         }));
+
+        Button pttButton = findViewById(R.id.pttButton);
+        pttButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                int pos = (int) view.getTag();
+                AppGroup ag = groupList.get(pos);
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) { // button is being pressed
+                    if (callPresenter.isAbleToStartTalking()) {
+                        callPresenter.startTalking();
+                        Toast.makeText(getApplicationContext(), "PTT to " + ag.getGroup().getDisplayName() + " is pressed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP) { // button is being released
+                    Toast.makeText(getApplicationContext(), "PTT is released", Toast.LENGTH_SHORT).show();
+                    callPresenter.stopTalking();
+                }
+                return false;
+            }
+        });
     }
 
     public void onCallClick(View view) {
         int pos = (int) view.getTag();
         AppGroup ag = groupList.get(pos);
-        if ( presentersManager.getCallPresenter().callGroup(ag) ) {
+        if ( callPresenter.callGroup(ag) ) {
             Toast.makeText(this, "Call to " + ag.getGroup().getDisplayName() + " succeeded", Toast.LENGTH_SHORT).show();
             Button pttButton = findViewById(R.id.pttButton);
             pttButton.setEnabled(true);
@@ -84,10 +108,19 @@ public class GroupListActivity extends AppCompatActivity {
         }
     }
 
+    /* former ptt click method
     public void onPttClick(View view) {
         int pos = (int) view.getTag();
         AppGroup ag = groupList.get(pos);
-        Toast.makeText(this, "PTT to " + ag.getGroup().getDisplayName(), Toast.LENGTH_SHORT).show();
-        view.setEnabled(false);
+        if (callPresenter.isAbleToStartTalking()) {
+            callPresenter.startTalking();
+            Toast.makeText(this, "PTT to " + ag.getGroup().getDisplayName(), Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(this, "Unable to start talking", Toast.LENGTH_SHORT).show();
+
+        }
+        callPresenter.stopTalking();
     }
+    */
 }

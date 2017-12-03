@@ -35,6 +35,18 @@ public class CallPresenter {
         return isCallSucceeded;
     }
 
+    public void startTalking() {
+        callModule.startTalking();
+    }
+
+    public void stopTalking() {
+        callModule.stopTalking();
+    }
+
+    public boolean isAbleToStartTalking() {
+        return callModule.isAbleToStartTalking();
+    }
+
     public boolean isCallSucceeded() {
         return  isCallSucceeded;
     }
