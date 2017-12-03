@@ -72,10 +72,16 @@ public class GroupListActivity extends AppCompatActivity {
     public void onCallClick(View view) {
         int pos = (int) view.getTag();
         AppGroup ag = groupList.get(pos);
-        Toast.makeText(this, "Call to " + ag.getGroup().getDisplayName(), Toast.LENGTH_SHORT).show();
-        Button pttButton = (Button) findViewById(R.id.pttButton);
-        pttButton.setEnabled(true);
-        pttButton.setTag(pos);
+        if ( presentersManager.getCallPresenter().callGroup(ag) ) {
+            Toast.makeText(this, "Call to " + ag.getGroup().getDisplayName() + " succeeded", Toast.LENGTH_SHORT).show();
+            Button pttButton = findViewById(R.id.pttButton);
+            pttButton.setEnabled(true);
+            pttButton.setTag(pos);
+            view.setEnabled(false);
+        }
+        else {
+            Toast.makeText(this, "Call to " + ag.getGroup().getDisplayName() + " failed", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void onPttClick(View view) {

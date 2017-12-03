@@ -9,6 +9,7 @@ public class PresentersManager {
     private static PresentersManager presentersManager = null;
     private ClientPresenter clientPresenter = new ClientPresenter();
     private  GroupPresenter groupPresenter = null;
+    private CallPresenter callPresenter = null;
 
     public static PresentersManager getInstance() {
         if (presentersManager == null) {
@@ -19,6 +20,7 @@ public class PresentersManager {
     // Need to initiate the modules only after the client has started and signed in
     public void initModules() {
         groupPresenter = new GroupPresenter();
+        callPresenter = new CallPresenter();
     }
 
     public ClientPresenter getClientPresenter() {
@@ -27,5 +29,9 @@ public class PresentersManager {
 
     public GroupPresenter getGroupPresenter() {
         return groupPresenter;
+    }
+
+    public CallPresenter getCallPresenter() {
+        return callPresenter;
     }
 }
