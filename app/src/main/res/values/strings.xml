@@ -13,4 +13,5 @@
     <string name="groups">Groups</string>
     <string name="ptt_text">PTT</string>
     <string name="call_text">call</string>
+    <string name="end_call_text">End Call</string>
 </resources>

@@ -99,13 +99,31 @@ public class GroupListActivity extends AppCompatActivity {
         if ( callPresenter.callGroup(ag) ) {
             Toast.makeText(this, "Call to " + ag.getGroup().getDisplayName() + " succeeded", Toast.LENGTH_SHORT).show();
             Button pttButton = findViewById(R.id.pttButton);
+            Button endCallButton = findViewById(R.id.endCallButton);
             pttButton.setEnabled(true);
+            endCallButton.setEnabled(true);
             pttButton.setTag(pos);
             view.setEnabled(false);
         }
         else {
             Toast.makeText(this, "Call to " + ag.getGroup().getDisplayName() + " failed", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void onEndCallClick(View view) {
+        if (callPresenter.isAbleToEndCall()) {
+            callPresenter.endCall();
+            view.setEnabled(false);
+             Button pttButton = findViewById(R.id.pttButton);
+             pttButton.setEnabled(false);
+             int pos = (int) pttButton.getTag();
+             View curLine = recyclerView.getChildAt(pos);
+             curLine.findViewById(R.id.callButton).setEnabled(true);
+        }
+        else {
+            Toast.makeText(this, "Unable to end call", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     /* former ptt click method

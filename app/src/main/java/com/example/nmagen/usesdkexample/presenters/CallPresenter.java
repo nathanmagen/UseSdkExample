@@ -35,6 +35,10 @@ public class CallPresenter {
         return isCallSucceeded;
     }
 
+    public void endCall() {
+        callModule.endCall();
+    }
+
     public void startTalking() {
         callModule.startTalking();
     }
@@ -45,6 +49,10 @@ public class CallPresenter {
 
     public boolean isAbleToStartTalking() {
         return callModule.isAbleToStartTalking();
+    }
+
+    public boolean isAbleToEndCall() {
+        return callModule.isAbleToEndCall();
     }
 
     public boolean isCallSucceeded() {
