@@ -19,6 +19,7 @@ import com.example.nmagen.usesdkexample.data.AppGroup;
 import com.example.nmagen.usesdkexample.presenters.CallPresenter;
 import com.example.nmagen.usesdkexample.presenters.GroupPresenter;
 import com.example.nmagen.usesdkexample.presenters.PresentersManager;
+import com.example.nmagen.usesdkexample.presenters.SOSPresenter;
 
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class GroupListActivity extends AppCompatActivity {
                     view.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                 }
 
-                // un selecting all the rest of the groups in the list
+                // unselecting all the rest of the groups in the list
                 int listSize = groupList.size();
                 for (int i = 0; i < listSize; i++) {
                     if (position != i) {
@@ -75,7 +76,7 @@ public class GroupListActivity extends AppCompatActivity {
             }
         }));
 
-        Button pttButton = findViewById(R.id.pttButton);
+        Button pttButton = findViewById(R.id.pttButton); // assigning functionality to ptt button for pressing and releasing
         pttButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -96,16 +97,33 @@ public class GroupListActivity extends AppCompatActivity {
         });
     }
 
-    @Override
+    @Override // inflating the menu - adding the sos icon to the app bar
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.sos_menu, menu);
         return true;
     }
 
-    @Override
+    @Override // triggered when the sos icon is pressed
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        Toast.makeText(getApplicationContext(), "SOS button is pressed", Toast.LENGTH_LONG).show();
+        SOSPresenter sosPresenter = presentersManager.getSosPresenter();
+        if (sosPresenter.isAvailable()) {
+            sosPresenter.sendRegularSOS();
+            Toast.makeText(getApplicationContext(), "Sending SOS", Toast.LENGTH_LONG).show();
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "SOS is unavailable", Toast.LENGTH_LONG).show();
+        }
+        /* // Checking if a user can send SOS to dispatcher only
+        if (sosPresenter.isSOSTypeDispatcher()) {
+            Toast.makeText(getApplicationContext(), "SOS to dispatcher only", Toast.LENGTH_LONG).show();
+
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "SOS to group", Toast.LENGTH_LONG).show();
+
+        }
+        */
         return true;
     }
 

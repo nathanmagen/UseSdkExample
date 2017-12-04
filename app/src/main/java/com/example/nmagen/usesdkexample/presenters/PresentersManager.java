@@ -10,6 +10,7 @@ public class PresentersManager {
     private ClientPresenter clientPresenter = new ClientPresenter();
     private  GroupPresenter groupPresenter = null;
     private CallPresenter callPresenter = null;
+    private SOSPresenter sosPresenter = null;
 
     public static PresentersManager getInstance() {
         if (presentersManager == null) {
@@ -21,6 +22,7 @@ public class PresentersManager {
     public void initModules() {
         groupPresenter = new GroupPresenter();
         callPresenter = new CallPresenter();
+        sosPresenter = new SOSPresenter();
     }
 
     public ClientPresenter getClientPresenter() {
@@ -33,5 +35,9 @@ public class PresentersManager {
 
     public CallPresenter getCallPresenter() {
         return callPresenter;
+    }
+
+    public SOSPresenter getSosPresenter() {
+        return sosPresenter;
     }
 }
