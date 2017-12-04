@@ -15,5 +15,7 @@
     <string name="call_text">call</string>
     <string name="end_call_text">End Call</string>
     <string name="sos_item_title">SOS</string>
+    <string name="end_call_item_title">End Call</string>
+
 
 </resources>

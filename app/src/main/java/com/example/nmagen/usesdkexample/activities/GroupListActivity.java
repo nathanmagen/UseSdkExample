@@ -34,6 +34,7 @@ public class GroupListActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
+    private Menu appBarMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,11 +102,75 @@ public class GroupListActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.sos_menu, menu);
+        appBarMenu = menu;
         return true;
     }
 
     @Override // triggered when the sos icon is pressed
     public boolean onOptionsItemSelected(MenuItem menuItem) {
+        if (menuItem.getItemId() == R.id.action_sos) {
+            onSOSClick();
+        }
+        else {
+            onEndCallClick(menuItem);
+        }
+
+        return true;
+    }
+
+    public void onCallClick(View view) {
+        int pos = (int) view.getTag();
+        AppGroup ag = groupList.get(pos);
+        if ( callPresenter.callGroup(ag) ) {
+            Toast.makeText(this, "Call to " + ag.getGroup().getDisplayName() + " succeeded", Toast.LENGTH_SHORT).show();
+            Button pttButton = findViewById(R.id.pttButton);
+            MenuItem endCallItem = appBarMenu.findItem(R.id.end_call_item);
+            pttButton.setEnabled(true);
+            endCallItem.setEnabled(true);
+            pttButton.setTag(pos);
+            view.setEnabled(false);
+        }
+        else {
+            Toast.makeText(this, "Call to " + ag.getGroup().getDisplayName() + " failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void onEndCallClick(MenuItem endCallItem) {
+        if (callPresenter.isAbleToEndCall()) {
+            callPresenter.endCall();
+            endCallItem.setEnabled(false);
+            Button pttButton = findViewById(R.id.pttButton);
+            pttButton.setEnabled(false);
+            int pos = (int) pttButton.getTag();
+            View curLine = recyclerView.getChildAt(pos);
+            AppGroup ag = groupList.get(pos);
+            if (ag.isSelected()) {
+                curLine.findViewById(R.id.callButton).setEnabled(true);
+            }
+            Toast.makeText(this, "Call to " + ag.getGroup().getDisplayName() + " ended", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(this, "Unable to end call", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /* former ptt click method
+    public void onPttClick(View view) {
+        int pos = (int) view.getTag();
+        AppGroup ag = groupList.get(pos);
+        if (callPresenter.isAbleToStartTalking()) {
+            callPresenter.startTalking();
+            Toast.makeText(this, "PTT to " + ag.getGroup().getDisplayName(), Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(this, "Unable to start talking", Toast.LENGTH_SHORT).show();
+
+        }
+        callPresenter.stopTalking();
+    }
+    */
+
+    public void onSOSClick() {
         SOSPresenter sosPresenter = presentersManager.getSosPresenter();
         if (sosPresenter.isAvailable()) {
             sosPresenter.sendRegularSOS();
@@ -124,55 +189,5 @@ public class GroupListActivity extends AppCompatActivity {
 
         }
         */
-        return true;
     }
-
-    public void onCallClick(View view) {
-        int pos = (int) view.getTag();
-        AppGroup ag = groupList.get(pos);
-        if ( callPresenter.callGroup(ag) ) {
-            Toast.makeText(this, "Call to " + ag.getGroup().getDisplayName() + " succeeded", Toast.LENGTH_SHORT).show();
-            Button pttButton = findViewById(R.id.pttButton);
-            Button endCallButton = findViewById(R.id.endCallButton);
-            pttButton.setEnabled(true);
-            endCallButton.setEnabled(true);
-            pttButton.setTag(pos);
-            view.setEnabled(false);
-        }
-        else {
-            Toast.makeText(this, "Call to " + ag.getGroup().getDisplayName() + " failed", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void onEndCallClick(View view) {
-        if (callPresenter.isAbleToEndCall()) {
-            callPresenter.endCall();
-            view.setEnabled(false);
-             Button pttButton = findViewById(R.id.pttButton);
-             pttButton.setEnabled(false);
-             int pos = (int) pttButton.getTag();
-             View curLine = recyclerView.getChildAt(pos);
-             curLine.findViewById(R.id.callButton).setEnabled(true);
-        }
-        else {
-            Toast.makeText(this, "Unable to end call", Toast.LENGTH_SHORT).show();
-        }
-
-    }
-
-    /* former ptt click method
-    public void onPttClick(View view) {
-        int pos = (int) view.getTag();
-        AppGroup ag = groupList.get(pos);
-        if (callPresenter.isAbleToStartTalking()) {
-            callPresenter.startTalking();
-            Toast.makeText(this, "PTT to " + ag.getGroup().getDisplayName(), Toast.LENGTH_SHORT).show();
-        }
-        else {
-            Toast.makeText(this, "Unable to start talking", Toast.LENGTH_SHORT).show();
-
-        }
-        callPresenter.stopTalking();
-    }
-    */
 }
