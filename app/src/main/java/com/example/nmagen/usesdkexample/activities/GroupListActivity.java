@@ -1,5 +1,7 @@
 package com.example.nmagen.usesdkexample.activities;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -13,6 +15,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.MobileTornado.sdk.model.CallCallbacks;
+import com.MobileTornado.sdk.model.data.CallInfo;
+import com.MobileTornado.sdk.model.data.Contact;
 import com.example.nmagen.usesdkexample.adapters.ListToViewAdapter;
 import com.example.nmagen.usesdkexample.R;
 import com.example.nmagen.usesdkexample.data.AppGroup;
@@ -35,12 +40,55 @@ public class GroupListActivity extends AppCompatActivity {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private Menu appBarMenu;
+    private CallCallbacks callCallbacks = new CallCallbacks() {
+        @Override
+        public void onIncomingCall(@NonNull CallInfo callInfo) {
+
+        }
+
+        @Override
+        public void onIncomingCallRejected() {
+
+        }
+
+        @Override
+        public void onCallConnected(CallInfo callInfo) {
+            Toast.makeText(getApplicationContext(), "On call with " + callInfo.getName(), Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onCallModified(CallInfo callInfo) {
+
+        }
+
+        @Override
+        public void onCallEnded(CallInfo callInfo, int reason) {
+
+        }
+
+        @Override
+        public void onCurrentTalkerUpdated(boolean isMe, @Nullable Contact talker) {
+            if (!isMe && talker != null) {
+                Toast.makeText(getApplicationContext(), talker.getDisplayName() + " is talking", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onAvailableToStartTalking(boolean isAvailable) {
+
+        }
+
+        @Override
+        public void onAvailableToEndCall(boolean isAvailable) {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_list);
-
+        callPresenter.setCallCallbacks(callCallbacks);
         recyclerView = findViewById(R.id.group_list_view);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -122,7 +170,7 @@ public class GroupListActivity extends AppCompatActivity {
         int pos = (int) view.getTag();
         AppGroup ag = groupList.get(pos);
         if ( callPresenter.callGroup(ag) ) {
-            Toast.makeText(this, "Call to " + ag.getGroup().getDisplayName() + " succeeded", Toast.LENGTH_SHORT).show();
+            // Toast.makeText(this, "Call to " + ag.getGroup().getDisplayName() + " succeeded", Toast.LENGTH_SHORT).show();
             Button pttButton = findViewById(R.id.pttButton);
             MenuItem endCallItem = appBarMenu.findItem(R.id.end_call_item);
             pttButton.setEnabled(true);

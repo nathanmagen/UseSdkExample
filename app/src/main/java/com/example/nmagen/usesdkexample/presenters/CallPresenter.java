@@ -3,6 +3,7 @@ package com.example.nmagen.usesdkexample.presenters;
 import android.util.Log;
 
 import com.MobileTornado.sdk.TornadoClient;
+import com.MobileTornado.sdk.model.CallCallbacks;
 import com.MobileTornado.sdk.model.CallModule;
 import com.MobileTornado.sdk.model.RequestCallback;
 import com.MobileTornado.sdk.model.data.CallInfo;
@@ -33,6 +34,10 @@ public class CallPresenter {
     public boolean callGroup(AppGroup group) {
         callModule.startCall(group.getGroup(), outgoingCallRequestCallback);
         return isCallSucceeded;
+    }
+
+    public void setCallCallbacks(CallCallbacks callCallbacks) {
+        callModule.addCallCallbacks(callCallbacks);
     }
 
     public void endCall() {
