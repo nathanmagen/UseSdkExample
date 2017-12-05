@@ -2,11 +2,13 @@ package com.example.nmagen.usesdkexample.data;
 
 import com.MobileTornado.sdk.model.data.Group;
 
+import java.io.Serializable;
+
 /**
  * Created by nmagen on 29/11/2017.
  */
 
-public class AppGroup {
+public class AppGroup implements Serializable {
     private Group group;
     private boolean isSelected;
 

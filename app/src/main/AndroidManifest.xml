@@ -19,10 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.FourButtonsActivity"
-            android:parentActivityName=".activities.MainActivity" />
-        <activity android:name=".activities.GroupListActivity"></activity>
+        <activity android:name=".activities.FourButtonsActivity" />
+        <activity android:name=".activities.GroupListActivity" />
     </application>
 
 </manifest>

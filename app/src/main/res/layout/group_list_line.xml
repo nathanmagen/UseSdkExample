@@ -20,13 +20,13 @@
         android:layout_marginLeft="8dp" />
 
     <Button
-        android:id="@+id/callButton"
+        android:id="@+id/select_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="24dp"
-        android:onClick="onCallClick"
-        android:text="@string/call_text"
+        android:onClick="onSelectClick"
+        android:text="@string/select"
         app:layout_constraintBaseline_toBaselineOf="@+id/groupName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.919"

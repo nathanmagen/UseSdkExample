@@ -1,5 +1,7 @@
 package com.example.nmagen.usesdkexample.activities;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +29,7 @@ import com.example.nmagen.usesdkexample.presenters.GroupPresenter;
 import com.example.nmagen.usesdkexample.presenters.PresentersManager;
 import com.example.nmagen.usesdkexample.presenters.SOSPresenter;
 
+import java.io.Serializable;
 import java.util.List;
 
 import listeners.RecyclerTouchListener;
@@ -35,76 +38,18 @@ import listeners.RecyclerTouchListener;
 public class GroupListActivity extends AppCompatActivity {
     private PresentersManager presentersManager = PresentersManager.getInstance();
     private GroupPresenter groupPresenter = presentersManager.getGroupPresenter();
-    private CallPresenter callPresenter = presentersManager.getCallPresenter();
     private List<AppGroup> groupList = groupPresenter.getGroupList();
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
-    private Menu appBarMenu;
-    private CallCallbacks callCallbacks = new CallCallbacks() {
-        @Override
-        public void onIncomingCall(@NonNull CallInfo callInfo) {
-
-        }
-
-        @Override
-        public void onIncomingCallRejected() {
-
-        }
-
-        @Override
-        public void onCallConnected(CallInfo callInfo) {
-            Button pttButton = findViewById(R.id.pttButton);
-            MenuItem endCallItem = appBarMenu.findItem(R.id.end_call_item);
-            pttButton.setEnabled(true);
-            endCallItem.setEnabled(true);
-            Toast.makeText(getApplicationContext(), "On call with " + callInfo.getName(), Toast.LENGTH_SHORT).show();
-            findViewById(R.id.pttButton).setEnabled(true);
-        }
-
-        @Override
-        public void onCallModified(CallInfo callInfo) {
-
-        }
-
-        @Override
-        public void onCallEnded(CallInfo callInfo, int reason) {
-            MenuItem endCallItem = appBarMenu.findItem(R.id.end_call_item);
-            endCallItem.setEnabled(false);
-            Button pttButton = findViewById(R.id.pttButton);
-            pttButton.setEnabled(false);
-            Toast.makeText(getApplicationContext(), "Call to " + callInfo.getName() + " ended", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onCurrentTalkerUpdated(boolean isMe, @Nullable Contact talker) {
-            if (!isMe && talker != null) {
-                Toast.makeText(getApplicationContext(), talker.getDisplayName() + " is talking", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        @Override
-        public void onAvailableToStartTalking(boolean isAvailable) {
-
-        }
-
-        @Override
-        public void onAvailableToEndCall(boolean isAvailable) {
-
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_list);
 
-        // Setting the user to get calls and subscribing to call callbacks
-        presentersManager.getClientPresenter().setState(UserState.ONLINE);
-        callPresenter.setCallCallbacks(callCallbacks);
-
-        // Tagging the ptt button with default value for a case a call would be ended without any group been chosen
-        findViewById(R.id.pttButton).setTag(0);
+        // Setting the user to not get calls
+        presentersManager.getClientPresenter().setState(UserState.DND);
 
         // Setting up the recycler view
         recyclerView = findViewById(R.id.group_list_view);
@@ -120,7 +65,7 @@ public class GroupListActivity extends AppCompatActivity {
                 if (!clickedGroup.isSelected()) {
                     // select procedure, consider moving to private method
                     clickedGroup.setSelected();
-                    view.findViewById(R.id.callButton).setEnabled(true);
+                    view.findViewById(R.id.select_button).setEnabled(true);
                     view.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                 }
 
@@ -131,8 +76,7 @@ public class GroupListActivity extends AppCompatActivity {
                         groupList.get(i).setUnSelected();
                         View v = recyclerView.getChildAt(i);
                         v.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                        v.findViewById(R.id.callButton).setEnabled(false);
-                        v.setClickable(true);
+                        v.findViewById(R.id.select_button).setEnabled(false);
                     }
                 }
             }
@@ -142,110 +86,15 @@ public class GroupListActivity extends AppCompatActivity {
 
             }
         }));
-
-        Button pttButton = findViewById(R.id.pttButton); // assigning functionality to ptt button for pressing and releasing
-        pttButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) { // button is being pressed
-                    if (callPresenter.isAbleToStartTalking()) {
-                        callPresenter.startTalking();
-                        Toast.makeText(getApplicationContext(), "Recording, start talking...", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                if (motionEvent.getAction() == MotionEvent.ACTION_UP) { // button is being released
-                    Toast.makeText(getApplicationContext(), "Stopped recording", Toast.LENGTH_SHORT).show();
-                    callPresenter.stopTalking();
-                }
-                return false;
-            }
-        });
     }
 
-    @Override // inflating the menu - adding the sos icon to the app bar
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.sos_menu, menu);
-        appBarMenu = menu;
-        return true;
-    }
-
-    @Override // triggered when the sos icon is pressed
-    public boolean onOptionsItemSelected(MenuItem menuItem) {
-        if (menuItem.getItemId() == R.id.action_sos) {
-            onSOSClick();
-        }
-        else {
-            onEndCallClick(menuItem);
-        }
-
-        return true;
-    }
-
-    public void onCallClick(View view) {
+    public void onSelectClick(View view) {
         int pos = (int) view.getTag();
-        AppGroup ag = groupList.get(pos);
-        if ( callPresenter.callGroup(ag) ) {
-            view.setEnabled(false);
-            Button pttButton = findViewById(R.id.pttButton);
-            pttButton.setTag(pos); // setting the position to the ptt button so the call button could be enabled on end call
-        }
-        else {
-            Toast.makeText(this, "Call to " + ag.getGroup().getDisplayName() + " failed", Toast.LENGTH_SHORT).show();
-        }
+        Intent resultData = new Intent();
+        resultData.putExtra(FourButtonsActivity.GROUP_TAG, pos);
+        setResult(Activity.RESULT_OK, resultData);
+        finish();
     }
 
-    public void onEndCallClick(MenuItem endCallItem) {
-        if (callPresenter.isAbleToEndCall()) {
-            callPresenter.endCall();
-            // Enabling the call button if the line is selected
-            Button pttButton = findViewById(R.id.pttButton);
-            int pos = (int) pttButton.getTag();
-            View curLine = recyclerView.getChildAt(pos);
-            AppGroup ag = groupList.get(pos);
-            if (ag.isSelected()) {
-                curLine.findViewById(R.id.callButton).setEnabled(true);
-            }
-        }
-        else {
-            Toast.makeText(this, "Unable to end call", Toast.LENGTH_SHORT).show();
-        }
-    }
 
-    /* former ptt click method
-    public void onPttClick(View view) {
-        int pos = (int) view.getTag();
-        AppGroup ag = groupList.get(pos);
-        if (callPresenter.isAbleToStartTalking()) {
-            callPresenter.startTalking();
-            Toast.makeText(this, "PTT to " + ag.getGroup().getDisplayName(), Toast.LENGTH_SHORT).show();
-        }
-        else {
-            Toast.makeText(this, "Unable to start talking", Toast.LENGTH_SHORT).show();
-
-        }
-        callPresenter.stopTalking();
-    }
-    */
-
-    public void onSOSClick() {
-        SOSPresenter sosPresenter = presentersManager.getSosPresenter();
-        if (sosPresenter.isAvailable()) {
-            sosPresenter.sendRegularSOS();
-            Toast.makeText(getApplicationContext(), "Sending SOS", Toast.LENGTH_LONG).show();
-        }
-        else {
-            Toast.makeText(getApplicationContext(), "SOS is unavailable", Toast.LENGTH_LONG).show();
-        }
-        /* // Checking if a user can send SOS to dispatcher only
-        if (sosPresenter.isSOSTypeDispatcher()) {
-            Toast.makeText(getApplicationContext(), "SOS to dispatcher only", Toast.LENGTH_LONG).show();
-
-        }
-        else {
-            Toast.makeText(getApplicationContext(), "SOS to group", Toast.LENGTH_LONG).show();
-
-        }
-        */
-    }
 }
