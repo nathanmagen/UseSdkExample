@@ -38,6 +38,10 @@ public class ClientPresenter {
         return client.isSignedIn();
     }
 
+    public void setState(UserState state) {
+        client.setUserState(state);
+    }
+
     private ClientCallbacks clientCallbacks = new ClientCallbacks() {
         @Override
         public void onStarted() {

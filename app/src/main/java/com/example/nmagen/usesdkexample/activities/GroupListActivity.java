@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.MobileTornado.sdk.model.CallCallbacks;
 import com.MobileTornado.sdk.model.data.CallInfo;
 import com.MobileTornado.sdk.model.data.Contact;
+import com.MobileTornado.sdk.model.data.UserState;
 import com.example.nmagen.usesdkexample.adapters.ListToViewAdapter;
 import com.example.nmagen.usesdkexample.R;
 import com.example.nmagen.usesdkexample.data.AppGroup;
@@ -53,7 +54,12 @@ public class GroupListActivity extends AppCompatActivity {
 
         @Override
         public void onCallConnected(CallInfo callInfo) {
+            Button pttButton = findViewById(R.id.pttButton);
+            MenuItem endCallItem = appBarMenu.findItem(R.id.end_call_item);
+            pttButton.setEnabled(true);
+            endCallItem.setEnabled(true);
             Toast.makeText(getApplicationContext(), "On call with " + callInfo.getName(), Toast.LENGTH_SHORT).show();
+            findViewById(R.id.pttButton).setEnabled(true);
         }
 
         @Override
@@ -63,7 +69,11 @@ public class GroupListActivity extends AppCompatActivity {
 
         @Override
         public void onCallEnded(CallInfo callInfo, int reason) {
-
+            MenuItem endCallItem = appBarMenu.findItem(R.id.end_call_item);
+            endCallItem.setEnabled(false);
+            Button pttButton = findViewById(R.id.pttButton);
+            pttButton.setEnabled(false);
+            Toast.makeText(getApplicationContext(), "Call to " + callInfo.getName() + " ended", Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -88,7 +98,15 @@ public class GroupListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_list);
+
+        // Setting the user to get calls and subscribing to call callbacks
+        presentersManager.getClientPresenter().setState(UserState.ONLINE);
         callPresenter.setCallCallbacks(callCallbacks);
+
+        // Tagging the ptt button with default value for a case a call would be ended without any group been chosen
+        findViewById(R.id.pttButton).setTag(0);
+
+        // Setting up the recycler view
         recyclerView = findViewById(R.id.group_list_view);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -129,16 +147,14 @@ public class GroupListActivity extends AppCompatActivity {
         pttButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                int pos = (int) view.getTag();
-                AppGroup ag = groupList.get(pos);
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) { // button is being pressed
                     if (callPresenter.isAbleToStartTalking()) {
                         callPresenter.startTalking();
-                        Toast.makeText(getApplicationContext(), "PTT to " + ag.getGroup().getDisplayName() + " is pressed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Recording, start talking...", Toast.LENGTH_SHORT).show();
                     }
                 }
                 if (motionEvent.getAction() == MotionEvent.ACTION_UP) { // button is being released
-                    Toast.makeText(getApplicationContext(), "PTT is released", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Stopped recording", Toast.LENGTH_SHORT).show();
                     callPresenter.stopTalking();
                 }
                 return false;
@@ -170,13 +186,9 @@ public class GroupListActivity extends AppCompatActivity {
         int pos = (int) view.getTag();
         AppGroup ag = groupList.get(pos);
         if ( callPresenter.callGroup(ag) ) {
-            // Toast.makeText(this, "Call to " + ag.getGroup().getDisplayName() + " succeeded", Toast.LENGTH_SHORT).show();
-            Button pttButton = findViewById(R.id.pttButton);
-            MenuItem endCallItem = appBarMenu.findItem(R.id.end_call_item);
-            pttButton.setEnabled(true);
-            endCallItem.setEnabled(true);
-            pttButton.setTag(pos);
             view.setEnabled(false);
+            Button pttButton = findViewById(R.id.pttButton);
+            pttButton.setTag(pos); // setting the position to the ptt button so the call button could be enabled on end call
         }
         else {
             Toast.makeText(this, "Call to " + ag.getGroup().getDisplayName() + " failed", Toast.LENGTH_SHORT).show();
@@ -186,16 +198,14 @@ public class GroupListActivity extends AppCompatActivity {
     public void onEndCallClick(MenuItem endCallItem) {
         if (callPresenter.isAbleToEndCall()) {
             callPresenter.endCall();
-            endCallItem.setEnabled(false);
+            // Enabling the call button if the line is selected
             Button pttButton = findViewById(R.id.pttButton);
-            pttButton.setEnabled(false);
             int pos = (int) pttButton.getTag();
             View curLine = recyclerView.getChildAt(pos);
             AppGroup ag = groupList.get(pos);
             if (ag.isSelected()) {
                 curLine.findViewById(R.id.callButton).setEnabled(true);
             }
-            Toast.makeText(this, "Call to " + ag.getGroup().getDisplayName() + " ended", Toast.LENGTH_SHORT).show();
         }
         else {
             Toast.makeText(this, "Unable to end call", Toast.LENGTH_SHORT).show();

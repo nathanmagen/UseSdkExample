@@ -43,7 +43,7 @@ public class ListToViewAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ViewHolder lHolder = (ViewHolder)holder;
         lHolder.groupNameView.setText(groupList.get(position).getGroup().getDisplayName());
-        lHolder.callButton.setTag(position);
+        lHolder.callButton.setTag(position); // Tagging the button with the position so it would be available in the activity
         lHolder.callButton.setEnabled(false);
     }
 
