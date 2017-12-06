@@ -2,43 +2,32 @@ package com.example.nmagen.usesdkexample.activities;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.MobileTornado.sdk.model.CallCallbacks;
-import com.MobileTornado.sdk.model.data.CallInfo;
-import com.MobileTornado.sdk.model.data.Contact;
 import com.MobileTornado.sdk.model.data.UserState;
 import com.example.nmagen.usesdkexample.adapters.ListToViewAdapter;
 import com.example.nmagen.usesdkexample.R;
 import com.example.nmagen.usesdkexample.data.AppGroup;
-import com.example.nmagen.usesdkexample.presenters.CallPresenter;
 import com.example.nmagen.usesdkexample.presenters.GroupPresenter;
 import com.example.nmagen.usesdkexample.presenters.PresentersManager;
-import com.example.nmagen.usesdkexample.presenters.SOSPresenter;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-import listeners.RecyclerTouchListener;
+import com.example.nmagen.usesdkexample.listeners.RecyclerTouchListener;
 
 
 public class GroupListActivity extends AppCompatActivity {
     private PresentersManager presentersManager = PresentersManager.getInstance();
     private GroupPresenter groupPresenter = presentersManager.getGroupPresenter();
     private List<AppGroup> groupList = groupPresenter.getGroupList();
+    private List<String> groupNameList = new ArrayList<>();
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -56,7 +45,8 @@ public class GroupListActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        adapter = new ListToViewAdapter(groupList);
+        fillNameList();
+        adapter = new ListToViewAdapter(groupNameList, R.layout.group_list_line, R.id.groupName, R.id.select_button);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
@@ -96,5 +86,11 @@ public class GroupListActivity extends AppCompatActivity {
         finish();
     }
 
+    private void fillNameList() {
+        int size = groupList.size();
+        for (int i = 0; i < size; i++ ) {
+            groupNameList.add(groupList.get(i).getGroup().getDisplayName());
+        }
+    }
 
 }

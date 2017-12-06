@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // setting focus on the user name box and requesting to pop up the keyboard, not working
+        // Setting focus on the user name box and requesting to pop up the keyboard
         EditText userNameView = findViewById(R.id.userName);
         InputMethodManager inpMan = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         inpMan.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);

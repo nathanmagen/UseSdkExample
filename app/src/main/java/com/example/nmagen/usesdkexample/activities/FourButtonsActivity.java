@@ -27,7 +27,7 @@ import com.example.nmagen.usesdkexample.presenters.SOSPresenter;
 
 public class FourButtonsActivity extends AppCompatActivity {
     public static final String GROUP_TAG = "Group Tag";
-    private static final String TEXT_PRELIM = "I'm number ";
+    // private static final String TEXT_PRELIM = "I'm number ";
     public static final int REQUEST_CODE = 1;
     private AppGroup selectedGroup = null;
     private PresentersManager presentersManager = PresentersManager.getInstance();
@@ -176,14 +176,21 @@ public class FourButtonsActivity extends AppCompatActivity {
         }
     }
 
+    /*
     public void onClickToast(View view) {
         Button button = (Button) view;
         String buttNum = button.getText().toString();
         Toast.makeText(this, TEXT_PRELIM + buttNum, Toast.LENGTH_LONG).show();
     }
+    */
 
     public void onClickGroups(View view) {
         Intent intent = new Intent(this, GroupListActivity.class);
         startActivityForResult(intent, REQUEST_CODE);
+    }
+
+    public void onClickAddGroup(View view) {
+        Intent intent = new Intent(this, AddGroupActivity.class);
+        startActivity(intent);
     }
 }

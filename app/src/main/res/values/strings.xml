@@ -18,6 +18,11 @@
     <string name="end_call_item_title">End Call</string>
     <string name="no_group_selected">No group selected</string>
     <string name="select">Select</string>
+    <string name="added_group_name">New Group Name</string>
+    <string name="done_button">Done</string>
+    <string name="remove">Remove</string>
+    <string name="add">Add</string>
+    <string name="add_group">Add Group</string>
 
 
 </resources>

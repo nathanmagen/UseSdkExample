@@ -1,4 +1,4 @@
-package listeners;
+package com.example.nmagen.usesdkexample.listeners;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
