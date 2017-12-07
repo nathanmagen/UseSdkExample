@@ -13,17 +13,16 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/added_group_name_edit_text"
-            android:layout_width="match_parent"
+            android:layout_width="195dp"
             android:layout_height="wrap_content"
             android:hint="@string/added_group_name"
-            android:singleLine="true"
-            android:imeOptions="actionDone"/>
+            android:imeOptions="actionDone"
+            android:singleLine="true" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.v7.widget.RecyclerView
@@ -46,7 +45,21 @@
         android:layout_marginTop="12dp"
         android:onClick="onClickDone"
         android:text="@string/done_button"
+        android:enabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/contacts_list_view" />
+
+    <Button
+        android:id="@+id/add_group_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:onClick="onClickAddGroup"
+        android:text="@string/add"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/added_group_name_outer"
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

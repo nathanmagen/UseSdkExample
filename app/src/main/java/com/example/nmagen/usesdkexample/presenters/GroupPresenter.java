@@ -4,6 +4,7 @@ import com.MobileTornado.sdk.TornadoClient;
 import com.MobileTornado.sdk.model.ContactsModule;
 import com.MobileTornado.sdk.model.data.Contact;
 import com.MobileTornado.sdk.model.data.Group;
+import com.example.nmagen.usesdkexample.activities.AddGroupActivity;
 import com.example.nmagen.usesdkexample.data.AppContact;
 import com.example.nmagen.usesdkexample.data.AppGroup;
 
@@ -16,8 +17,8 @@ import java.util.List;
 
 public class GroupPresenter {
     private ContactsModule contactsModule = TornadoClient.getInstance().getContactsModule();
-    private List<Group> groupList = contactsModule.getGroups();
-    private List<Contact> contactList = contactsModule.getContacts();
+    private List<Group> groupList;
+    private List<Contact> contactList;
     private List<AppGroup> appGroupList = new ArrayList<AppGroup>();
     private List<AppContact> appContactList = new ArrayList<>();
 
@@ -27,7 +28,12 @@ public class GroupPresenter {
     }
 
     public void refreshGroups() {
+        groupList = contactsModule.getGroups();
         int listSize = groupList.size();
+        if (appGroupList.size() > 0) {
+            appGroupList.clear();
+        }
+
         for (int i = 0; i < listSize; i++) {
             AppGroup ag = new AppGroup(groupList.get(i));
             appGroupList.add(ag);
@@ -35,11 +41,29 @@ public class GroupPresenter {
     }
 
     public void refreshContacts() {
+        contactList = contactsModule.getContacts();
         int listSize = contactList.size();
+        if (appContactList.size() > 0) {
+            appContactList.clear();
+        }
+
         for (int i = 0; i < listSize; i++) {
             AppContact ac = new AppContact(contactList.get(i));
             appContactList.add(ac);
         }
+    }
+
+    public void addGroupAddListener(ContactsModule.GroupAddListener gaListener) {
+        contactsModule.addGroupAddListener(gaListener);
+    }
+
+    public void addGroup(String groupName) {
+        contactsModule.addGroup(groupName);
+        refreshGroups();
+    }
+
+    public void addContactToGroup(long contactId, long groupId) {
+        contactsModule.addContactToGroup(contactId, groupId);
     }
 
     public List<AppGroup> getGroupList() {
@@ -48,5 +72,16 @@ public class GroupPresenter {
 
     public List<AppContact> getContacts() {
         return appContactList;
+    }
+
+    public AppGroup getGroupByName(String groupName) {
+        int size = appGroupList.size();
+        for (int i = 0; i < size; i++) {
+            AppGroup candidateGroup = appGroupList.get(i);
+            if (groupName.matches(candidateGroup.getGroup().getDisplayName())) {
+                return candidateGroup;
+            }
+        }
+        return null;
     }
 }

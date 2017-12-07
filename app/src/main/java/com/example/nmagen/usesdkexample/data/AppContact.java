@@ -7,12 +7,12 @@ import com.MobileTornado.sdk.model.data.Contact;
  */
 
 public class AppContact {
-    private Contact group;
+    private Contact contact;
     private boolean isSelected;
     private boolean isAdded;
 
-    public AppContact(Contact g) {
-        group = g;
+    public AppContact(Contact c) {
+        contact = c;
         isSelected = false;
         isAdded = false;
     }
@@ -34,6 +34,6 @@ public class AppContact {
     }
 
     public Contact getContact() {
-        return group;
+        return contact;
     }
 }

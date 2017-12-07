@@ -12,7 +12,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.MobileTornado.sdk.model.ContactsModule;
 import com.MobileTornado.sdk.model.data.Contact;
+import com.MobileTornado.sdk.model.data.Group;
 import com.example.nmagen.usesdkexample.R;
 import com.example.nmagen.usesdkexample.adapters.ListToViewAdapter;
 import com.example.nmagen.usesdkexample.data.AppContact;
@@ -25,11 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddGroupActivity extends AppCompatActivity {
-    PresentersManager presentersManager = PresentersManager.getInstance();
-    GroupPresenter groupPresenter = presentersManager.getGroupPresenter();
-    List<AppContact> contactsList = groupPresenter.getContacts();
-    List<String> contactsNameList = new ArrayList<>();
-    List<AppContact> contactsToAdd = new ArrayList<>();
+    private PresentersManager presentersManager = PresentersManager.getInstance();
+    private GroupPresenter groupPresenter = presentersManager.getGroupPresenter();
+    private List<AppContact> contactsList = groupPresenter.getContacts();
+    private List<String> contactsNameList = new ArrayList<>();
+    private List<AppContact> contactsToAdd = new ArrayList<>();
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -39,13 +41,13 @@ public class AddGroupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_group);
 
-        // Setting focus on the group name box and requesting to pop up the keyboard
-        /*
-        EditText groupNameView = findViewById(R.id.added_group_name_edit_text);
-        InputMethodManager inpMan = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        inpMan.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-        groupNameView.setFocusableInTouchMode(true);
-        */
+        groupPresenter.addGroupAddListener(new ContactsModule.GroupAddListener() {
+            @Override
+            public void onGroupAdded(Group group) {
+                Toast.makeText(getApplicationContext(), group.getDisplayName() + " added successfully", Toast.LENGTH_LONG).show();
+            }
+        });
+
         // Setting the recyclerView
         recyclerView = findViewById(R.id.contacts_list_view);
         layoutManager = new LinearLayoutManager(this);
@@ -115,14 +117,48 @@ public class AddGroupActivity extends AppCompatActivity {
         contactsToAdd.remove(contactToRemove);
     }
 
+    public void onClickAddGroup(View view) {
+        EditText groupNameView = findViewById(R.id.added_group_name_edit_text);
+        String groupName = groupNameView.getText().toString();
+
+        if (groupName.matches("")) {
+            Toast.makeText(this, "No group name was entered ", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        findViewById(R.id.done_button).setEnabled(true);
+
+        groupPresenter.addGroup(groupName);
+
+    }
+
     public void onClickDone(View view) {
         int size =  contactsToAdd.size();
+
+        if (size == 0) {
+            Toast.makeText(this, "No members were selected", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        EditText groupNameView = findViewById(R.id.added_group_name_edit_text);
+        String groupName = groupNameView.getText().toString();
+        groupPresenter.refreshGroups();
+        AppGroup selectedGroup = groupPresenter.getGroupByName(groupName);
+
+        for (int i = 0; i < size; i++) {
+            groupPresenter.addContactToGroup(contactsToAdd.get(i).getContact().getId(), selectedGroup.getGroup().getId());
+        }
+
+        finish();
+
+        /*
         String mems = "";
         for (int i = 0; i < size; i++) {
             mems += contactsToAdd.get(i).getContact().getDisplayName();
             mems += " ";
         }
         Toast.makeText(getApplicationContext(),"Members: " + mems, Toast.LENGTH_LONG).show();
+        */
     }
 
     private void fillNameList() {
