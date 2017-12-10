@@ -54,7 +54,7 @@ public class AddGroupActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         fillNameList();
-        adapter = new ListToViewAdapter(contactsNameList, R.layout.contact_list_line, R.id.contact_name_view, R.id.add_button);
+        adapter = new ListToViewAdapter(this, contactsNameList, R.layout.contact_list_line, R.id.contact_name_view, R.id.add_button);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
@@ -75,10 +75,13 @@ public class AddGroupActivity extends AppCompatActivity {
                 }
 
                 // unselecting all the rest of the groups in the list
-                int listSize = contactsList.size();
-                for (int i = 0; i < listSize; i++) {
-                    if (position != i) {
-                        contactsList.get(i).setIsSelected(false);
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                int firstVisiblePos = linearLayoutManager.findFirstVisibleItemPosition();
+                int itemCount = linearLayoutManager.findLastVisibleItemPosition() - firstVisiblePos + 1;
+                int newPos = position - firstVisiblePos;
+                for (int i = 0; i < itemCount; i++) {
+                    if (newPos != i) {
+                        contactsList.get(i + firstVisiblePos).setIsSelected(false);
                         View v = recyclerView.getChildAt(i);
                         v.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                         v.findViewById(R.id.add_button).setEnabled(false);
@@ -149,6 +152,8 @@ public class AddGroupActivity extends AppCompatActivity {
             groupPresenter.addContactToGroup(contactsToAdd.get(i).getContact().getId(), selectedGroup.getGroup().getId());
         }
 
+        unselectAll();
+
         finish();
 
         /*
@@ -166,5 +171,26 @@ public class AddGroupActivity extends AppCompatActivity {
         for (int i = 0; i < size; i++ ) {
             contactsNameList.add(contactsList.get(i).getContact().getDisplayName());
         }
+    }
+
+    private void unselectAll() {
+        View v;
+        LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        int firstVisiblePos = linearLayoutManager.findFirstVisibleItemPosition();
+        int itemCount = linearLayoutManager.findLastVisibleItemPosition() - firstVisiblePos + 1;
+        for (int i = 0; i < itemCount; i++) {
+            AppContact ac = contactsList.get(i + firstVisiblePos);
+            ac.setIsSelected(false);
+            ac.setIsAdded(false);
+            v = recyclerView.getChildAt(i);
+            Button addButt = v.findViewById(R.id.add_button);
+            addButt.setEnabled(true);
+            Button removeButt = v.findViewById(R.id.remove_button);
+            removeButt.setEnabled(false);
+        }
+    }
+
+    public void unSelectContact(int pos) {
+        contactsList.get(pos).setIsSelected(false);
     }
 }

@@ -46,7 +46,7 @@ public class GroupListActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         fillNameList();
-        adapter = new ListToViewAdapter(groupNameList, R.layout.group_list_line, R.id.groupName, R.id.select_button);
+        adapter = new ListToViewAdapter(this, groupNameList, R.layout.group_list_line, R.id.groupName, R.id.select_button);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
@@ -60,15 +60,19 @@ public class GroupListActivity extends AppCompatActivity {
                 }
 
                 // unselecting all the rest of the groups in the list
-                int listSize = groupList.size();
-                for (int i = 0; i < listSize; i++) {
-                    if (position != i) {
-                        groupList.get(i).setUnSelected();
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                int firstVisiblePos = linearLayoutManager.findFirstVisibleItemPosition();
+                int itemCount = linearLayoutManager.findLastVisibleItemPosition() - firstVisiblePos + 1;
+                int newPos = position - firstVisiblePos;
+                for (int i = 0; i < itemCount; i++) {
+                    if (newPos != i) {
+                        groupList.get(i + firstVisiblePos).setUnSelected();
                         View v = recyclerView.getChildAt(i);
                         v.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                         v.findViewById(R.id.select_button).setEnabled(false);
                     }
                 }
+
             }
 
             @Override
@@ -91,6 +95,10 @@ public class GroupListActivity extends AppCompatActivity {
         for (int i = 0; i < size; i++ ) {
             groupNameList.add(groupList.get(i).getGroup().getDisplayName());
         }
+    }
+
+    public void unSelectGroup(int pos) {
+        groupList.get(pos).setUnSelected();
     }
 
 }
