@@ -27,7 +27,6 @@ import com.example.nmagen.usesdkexample.presenters.SOSPresenter;
 
 public class FourButtonsActivity extends AppCompatActivity {
     public static final String GROUP_TAG = "Group Tag";
-    // private static final String TEXT_PRELIM = "I'm number ";
     public static final int REQUEST_CODE = 1;
     private AppGroup selectedGroup = null;
     private PresentersManager presentersManager = PresentersManager.getInstance();

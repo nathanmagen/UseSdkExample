@@ -23,6 +23,8 @@
     <string name="remove">Remove</string>
     <string name="add">Add</string>
     <string name="add_group">Add Group</string>
+    <string name="remove_group">Remove Group</string>
+    <string name="show_group_members">Show Group Members</string>
 
 
 </resources>

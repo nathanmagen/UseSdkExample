@@ -7,9 +7,15 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.MobileTornado.sdk.model.ContactsModule;
+import com.MobileTornado.sdk.model.data.Group;
 import com.MobileTornado.sdk.model.data.UserState;
 import com.example.nmagen.usesdkexample.adapters.ListToViewAdapter;
 import com.example.nmagen.usesdkexample.R;
@@ -24,6 +30,7 @@ import com.example.nmagen.usesdkexample.listeners.RecyclerTouchListener;
 
 
 public class GroupListActivity extends AppCompatActivity {
+    private final int NO_GROUP_SELECTED = -1;
     private PresentersManager presentersManager = PresentersManager.getInstance();
     private GroupPresenter groupPresenter = presentersManager.getGroupPresenter();
     private List<AppGroup> groupList = groupPresenter.getGroupList();
@@ -31,6 +38,7 @@ public class GroupListActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
+    private int clickedOnGroupPosition = NO_GROUP_SELECTED;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +59,7 @@ public class GroupListActivity extends AppCompatActivity {
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
+                clickedOnGroupPosition = position;
                 AppGroup clickedGroup = groupList.get(position);
                 if (!clickedGroup.isSelected()) {
                     // select procedure, consider moving to private method
@@ -80,6 +89,34 @@ public class GroupListActivity extends AppCompatActivity {
 
             }
         }));
+
+        groupPresenter.addGroupRemoveListener(new ContactsModule.GroupRemoveListener() {
+            @Override
+            public void onGroupRemoved(Group group) {
+                Toast.makeText(getApplicationContext(), "The group was removed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override // inflating the menu
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.group_edit_menu, menu);
+        return true;
+    }
+
+    @Override // triggered one of the icons is pressed
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.remove_group_item:
+                removeGroup();
+                break;
+            case R.id.show_group_members_item:
+                showGroupMembers();
+                break;
+        }
+
+        return true;
     }
 
     public void onSelectClick(View view) {
@@ -87,7 +124,7 @@ public class GroupListActivity extends AppCompatActivity {
         Intent resultData = new Intent();
         resultData.putExtra(FourButtonsActivity.GROUP_TAG, pos);
         setResult(Activity.RESULT_OK, resultData);
-        finish();
+       // finish();
     }
 
     private void fillNameList() {
@@ -99,6 +136,28 @@ public class GroupListActivity extends AppCompatActivity {
 
     public void unSelectGroup(int pos) {
         groupList.get(pos).setUnSelected();
+    }
+
+    public void removeGroup() {
+        if (clickedOnGroupPosition == NO_GROUP_SELECTED) {
+            Toast.makeText(this, "No group was selected", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            AppGroup group2Remove = groupList.get(clickedOnGroupPosition);
+            if (group2Remove.getGroup().getType() != Group.Type.PERSONAL) {
+                Toast.makeText(this, "Can not remove non personal group", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                groupPresenter.removeGroup(group2Remove.getGroup().getId());
+                groupList.remove(clickedOnGroupPosition);
+                clickedOnGroupPosition = NO_GROUP_SELECTED;
+                finish();
+            }
+        }
+    }
+
+    public void showGroupMembers() {
+        Toast.makeText(this, "Showing members is not available yet", Toast.LENGTH_SHORT).show();
     }
 
 }

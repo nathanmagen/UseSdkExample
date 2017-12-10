@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:title="@string/remove_group"
+        android:id="@+id/remove_group_item"
+        app:showAsAction="withText"/>
+
+    <item
+        android:title="@string/show_group_members"
+        android:id="@+id/show_group_members_item"
+        app:showAsAction="withText"/>
+
+</menu>

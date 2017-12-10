@@ -57,6 +57,10 @@ public class GroupPresenter {
         contactsModule.addGroupAddListener(gaListener);
     }
 
+    public void addGroupRemoveListener(ContactsModule.GroupRemoveListener removeListener) {
+        contactsModule.addGroupRemoveListener(removeListener);
+    }
+
     public void addGroup(String groupName) {
         contactsModule.addGroup(groupName);
         refreshGroups();
@@ -83,5 +87,9 @@ public class GroupPresenter {
             }
         }
         return null;
+    }
+
+    public void removeGroup(long groupId) {
+        contactsModule.removeGroup(groupId);
     }
 }
