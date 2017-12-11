@@ -166,7 +166,7 @@ public class GroupListActivity extends AppCompatActivity {
 
                 Intent resultRemoveData = new Intent();
                 resultRemoveData.putExtra(FourButtonsActivity.REMOVE_GROUP_TAG, group2Remove.getGroup().getDisplayName());
-                setResult(Activity.RESULT_CANCELED, resultRemoveData);
+                setResult(FourButtonsActivity.RESULT_REMOVE_GROUP, resultRemoveData);
                 finish();
             }
         }

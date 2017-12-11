@@ -39,6 +39,7 @@ public class FourButtonsActivity extends AppCompatActivity {
     public static final String GROUP_TAG = "Group Tag";
     public static final String REMOVE_GROUP_TAG = "Remove group tag";
     public static final int REQUEST_CODE = 1;
+    public static final int RESULT_REMOVE_GROUP = -0xd0d1;
     private final String NO_GROUPS_CHOSEN = "No groups chosen";
     private AppGroup selectedGroup = null;
     private List<AppGroup> callOptionsList = new ArrayList<>();
@@ -108,6 +109,9 @@ public class FourButtonsActivity extends AppCompatActivity {
         presentersManager.getClientPresenter().setState(UserState.ONLINE);
         callPresenter.setCallCallbacks(callCallbacks);
 
+        setCallOptionsNameList();
+        setRecyclerView();
+
         Button pttButton = findViewById(R.id.ptt_button); // assigning functionality to ptt button for pressing and releasing
         pttButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -128,15 +132,6 @@ public class FourButtonsActivity extends AppCompatActivity {
                 return false;
             }
         });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        setCallOptionsNameList();
-        if (callOptionsList.size() == 0) {
-            setRecyclerView();
-        }
     }
 
     @Override
@@ -171,19 +166,19 @@ public class FourButtonsActivity extends AppCompatActivity {
                 selectedGroup.setUnSelected(); // so it would be choose-able again in the groups view
                 if (!isGroupFound(callOptionsList, selectedGroup.getGroup().getDisplayName())) {
                     callOptionsList.add(selectedGroup);
+                    setCallOptionsNameList();
+                    adapter.notifyDataSetChanged();
                 }
                 else {
                     Toast.makeText(this, "Group already chosen", Toast.LENGTH_SHORT).show();
                 }
-                setCallOptionsNameList();
-                setRecyclerView();
             }
-            else if (resultCode == Activity.RESULT_CANCELED) { // Group was removed
+            else if (resultCode == RESULT_REMOVE_GROUP) { // Group was removed
                 String group2RemoveName = data.getStringExtra(REMOVE_GROUP_TAG);
                 removeGroupsWithName(group2RemoveName);
                 setCallOptionsNameList();
                 if (callOptionsList.size() > 0) {
-                    setRecyclerView();
+                    adapter.notifyDataSetChanged();
                 }
             }
         }
