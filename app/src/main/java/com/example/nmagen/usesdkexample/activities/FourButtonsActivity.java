@@ -6,6 +6,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,15 +23,29 @@ import com.MobileTornado.sdk.model.data.CallInfo;
 import com.MobileTornado.sdk.model.data.Contact;
 import com.MobileTornado.sdk.model.data.UserState;
 import com.example.nmagen.usesdkexample.R;
+import com.example.nmagen.usesdkexample.adapters.ListToViewAdapter;
 import com.example.nmagen.usesdkexample.data.AppGroup;
+import com.example.nmagen.usesdkexample.listeners.RecyclerTouchListener;
 import com.example.nmagen.usesdkexample.presenters.CallPresenter;
 import com.example.nmagen.usesdkexample.presenters.PresentersManager;
 import com.example.nmagen.usesdkexample.presenters.SOSPresenter;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.function.Predicate;
+
 public class FourButtonsActivity extends AppCompatActivity {
     public static final String GROUP_TAG = "Group Tag";
+    public static final String REMOVE_GROUP_TAG = "Remove group tag";
     public static final int REQUEST_CODE = 1;
+    private final String NO_GROUPS_CHOSEN = "No groups chosen";
     private AppGroup selectedGroup = null;
+    private List<AppGroup> callOptionsList = new ArrayList<>();
+    private List<String> callOptionsNameList = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
     private PresentersManager presentersManager = PresentersManager.getInstance();
     private CallPresenter callPresenter = presentersManager.getCallPresenter();
     private CallCallbacks callCallbacks = new CallCallbacks() {
@@ -114,9 +131,19 @@ public class FourButtonsActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        setCallOptionsNameList();
+        if (callOptionsList.size() == 0) {
+            setRecyclerView();
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         presentersManager.getClientPresenter().setState(UserState.ONLINE);
+        findViewById(R.id.call_button).setEnabled(false);
     }
 
     @Override // inflating the menu
@@ -138,13 +165,26 @@ public class FourButtonsActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
+            if (resultCode == Activity.RESULT_OK) { // Group was selected
                 int pos = data.getIntExtra(GROUP_TAG, 0);
                 selectedGroup = presentersManager.getGroupPresenter().getGroupList().get(pos);
                 selectedGroup.setUnSelected(); // so it would be choose-able again in the groups view
-                TextView selectedGroupView = findViewById(R.id.selected_group);
-                selectedGroupView.setText("Selected group: " + selectedGroup.getGroup().getDisplayName());
-                findViewById(R.id.call_button).setEnabled(true);
+                if (!isGroupFound(callOptionsList, selectedGroup.getGroup().getDisplayName())) {
+                    callOptionsList.add(selectedGroup);
+                }
+                else {
+                    Toast.makeText(this, "Group already chosen", Toast.LENGTH_SHORT).show();
+                }
+                setCallOptionsNameList();
+                setRecyclerView();
+            }
+            else if (resultCode == Activity.RESULT_CANCELED) { // Group was removed
+                String group2RemoveName = data.getStringExtra(REMOVE_GROUP_TAG);
+                removeGroupsWithName(group2RemoveName);
+                setCallOptionsNameList();
+                if (callOptionsList.size() > 0) {
+                    setRecyclerView();
+                }
             }
         }
     }
@@ -188,7 +228,86 @@ public class FourButtonsActivity extends AppCompatActivity {
         startActivityForResult(intent, REQUEST_CODE);
     }
 
-    public void onClickAddGroup(View view) {
-        Toast.makeText(this, "Option moved to the group screen menu", Toast.LENGTH_SHORT).show();
+    private void setCallOptionsNameList() {
+        int size = callOptionsList.size();
+        callOptionsNameList.clear();
+        if (size == 0) {
+            callOptionsNameList.add(NO_GROUPS_CHOSEN);
+        }
+        else {
+            for (int i = 0; i < size; i++) {
+                callOptionsNameList.add(callOptionsList.get(i).getGroup().getDisplayName());
+            }
+        }
+    }
+
+    private void setRecyclerView() {
+        recyclerView = findViewById(R.id.call_options_recyclerView);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+        adapter = new ListToViewAdapter(this, callOptionsNameList, R.layout.call_option_list_line, R.id.call_option_name, ShowMembersActivity.NO_BUTTON); //TODO - change NO_BUTTON class
+        recyclerView.setAdapter(adapter);
+        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                if (callOptionsList.size() == 0) {
+                    return;
+                }
+
+                Button callButt = findViewById(R.id.call_button);
+                if (!callButt.isEnabled()) {
+                    callButt.setEnabled(true);
+                }
+
+                AppGroup clickedGroup = callOptionsList.get(position);
+                if (!clickedGroup.isSelected()) {
+                    clickedGroup.setSelected();
+                    // view.findViewById(R.id.select_button).setEnabled(true);
+                    view.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                    selectedGroup = clickedGroup;
+                }
+
+                // unselecting all the rest of the groups in the list
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                int firstVisiblePos = linearLayoutManager.findFirstVisibleItemPosition();
+                int itemCount = linearLayoutManager.findLastVisibleItemPosition() - firstVisiblePos + 1;
+                int newPos = position - firstVisiblePos;
+                for (int i = 0; i < itemCount; i++) {
+                    if (newPos != i) {
+                        callOptionsList.get(i + firstVisiblePos).setUnSelected();
+                        View v = recyclerView.getChildAt(i);
+                        v.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                        // v.findViewById(R.id.select_button).setEnabled(false);
+                    }
+                }
+
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
+    }
+
+    private void removeGroupsWithName(final String group2RemoveName) {
+        int size = callOptionsList.size();
+        for (int i = 0; i < size; i++) {
+            if (callOptionsList.get(i).getGroup().getDisplayName().matches(group2RemoveName)) {
+                callOptionsList.remove(i);
+                return;
+            }
+        }
+    }
+
+    private boolean isGroupFound(List<AppGroup> list, String groupName) {
+        int size = list.size();
+        for (int i = 0; i < size; i++) {
+            if (list.get(i).getGroup().getDisplayName().matches(groupName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

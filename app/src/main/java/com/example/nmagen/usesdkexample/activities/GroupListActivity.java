@@ -58,7 +58,7 @@ public class GroupListActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onStart() {
+    protected void onStart() {
         super.onStart();
         groupPresenter.refreshGroups();
         groupList = groupPresenter.getGroupList();
@@ -163,6 +163,10 @@ public class GroupListActivity extends AppCompatActivity {
                 groupPresenter.removeGroup(group2Remove.getGroup().getId());
                 groupList.remove(clickedOnGroupPosition);
                 clickedOnGroupPosition = NO_GROUP_SELECTED;
+
+                Intent resultRemoveData = new Intent();
+                resultRemoveData.putExtra(FourButtonsActivity.REMOVE_GROUP_TAG, group2Remove.getGroup().getDisplayName());
+                setResult(Activity.RESULT_CANCELED, resultRemoveData);
                 finish();
             }
         }
