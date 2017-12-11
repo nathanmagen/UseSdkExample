@@ -21,6 +21,7 @@ public class GroupPresenter {
     private List<Contact> contactList;
     private List<AppGroup> appGroupList = new ArrayList<AppGroup>();
     private List<AppContact> appContactList = new ArrayList<>();
+    private List<String> groupMembersNameList = new ArrayList<>();
 
     public GroupPresenter() {
         refreshGroups();
@@ -91,5 +92,23 @@ public class GroupPresenter {
 
     public void removeGroup(long groupId) {
         contactsModule.removeGroup(groupId);
+    }
+
+    public boolean isGroupEmpty(AppGroup appGroup) {
+        List<Contact> memberList = contactsModule.getGroupContacts(appGroup.getGroup().getId());
+        if ( 0 == memberList.size()) {
+            return true;
+        }
+        return false;
+    }
+
+    public List<String> getGroupMembersNameList(AppGroup appGroup) {
+        groupMembersNameList.clear();
+        List<Contact> memberList = contactsModule.getGroupContacts(appGroup.getGroup().getId());
+        int size = memberList.size();
+        for (int i = 0; i < size; i++) {
+            groupMembersNameList.add(memberList.get(i).getDisplayName());
+        }
+        return groupMembersNameList;
     }
 }

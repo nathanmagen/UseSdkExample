@@ -23,6 +23,7 @@
         <activity android:name=".activities.FourButtonsActivity" />
         <activity android:name=".activities.GroupListActivity" />
         <activity android:name=".activities.AddGroupActivity" />
+        <activity android:name=".activities.ShowMembersActivity"></activity>
     </application>
 
 </manifest>

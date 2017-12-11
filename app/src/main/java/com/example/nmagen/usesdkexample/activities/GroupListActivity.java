@@ -31,6 +31,7 @@ import com.example.nmagen.usesdkexample.listeners.RecyclerTouchListener;
 
 public class GroupListActivity extends AppCompatActivity {
     private final int NO_GROUP_SELECTED = -1;
+    public static final String SELECTED_GROUP_KEY = "com.example.nmagen.usesdkexample.activities";
     private PresentersManager presentersManager = PresentersManager.getInstance();
     private GroupPresenter groupPresenter = presentersManager.getGroupPresenter();
     private List<AppGroup> groupList = groupPresenter.getGroupList();
@@ -124,7 +125,7 @@ public class GroupListActivity extends AppCompatActivity {
         Intent resultData = new Intent();
         resultData.putExtra(FourButtonsActivity.GROUP_TAG, pos);
         setResult(Activity.RESULT_OK, resultData);
-       // finish();
+        finish();
     }
 
     private void fillNameList() {
@@ -157,7 +158,19 @@ public class GroupListActivity extends AppCompatActivity {
     }
 
     public void showGroupMembers() {
-        Toast.makeText(this, "Showing members is not available yet", Toast.LENGTH_SHORT).show();
+        if (clickedOnGroupPosition == NO_GROUP_SELECTED) {
+            Toast.makeText(this, "No group was selected", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            if (groupPresenter.isGroupEmpty(groupList.get(clickedOnGroupPosition))) {
+                Toast.makeText(this, "No members in group", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Intent intent = new Intent(this, ShowMembersActivity.class);
+                intent.putExtra(SELECTED_GROUP_KEY, clickedOnGroupPosition);
+                startActivity(intent);
+            }
+        }
     }
 
 }

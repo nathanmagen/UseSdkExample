@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.example.nmagen.usesdkexample.R;
 import com.example.nmagen.usesdkexample.activities.AddGroupActivity;
 import com.example.nmagen.usesdkexample.activities.GroupListActivity;
+import com.example.nmagen.usesdkexample.activities.ShowMembersActivity;
 
 import java.util.List;
 
@@ -31,7 +32,12 @@ public class ListToViewAdapter extends RecyclerView.Adapter {
             super(v);
             view = v;
             groupNameView = v.findViewById(textViewId);
-            selectButton = v.findViewById(buttonId);
+            if ( buttonId != ShowMembersActivity.NO_BUTTON) {
+                selectButton = v.findViewById(buttonId);
+            }
+            else {
+                selectButton = null;
+            }
         }
     }
 
@@ -54,8 +60,11 @@ public class ListToViewAdapter extends RecyclerView.Adapter {
         ViewHolder lHolder = (ViewHolder)holder;
         lHolder.groupNameView.setText(groupList.get(position));
         lHolder.view.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimary));
-        lHolder.selectButton.setEnabled(false);
-        lHolder.selectButton.setTag(position); // Tagging the button with the position so it would be available in the activity
+        if (lHolder.selectButton != null) {
+            lHolder.selectButton.setEnabled(false);
+            lHolder.selectButton.setTag(position); // Tagging the button with the position so it would be available in the activity
+        }
+
         if (activity instanceof GroupListActivity) {
             GroupListActivity a = (GroupListActivity)activity;
             a.unSelectGroup(position);
