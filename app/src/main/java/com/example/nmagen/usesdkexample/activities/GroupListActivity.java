@@ -34,7 +34,7 @@ public class GroupListActivity extends AppCompatActivity {
     public static final String SELECTED_GROUP_KEY = "com.example.nmagen.usesdkexample.activities";
     private PresentersManager presentersManager = PresentersManager.getInstance();
     private GroupPresenter groupPresenter = presentersManager.getGroupPresenter();
-    private List<AppGroup> groupList = groupPresenter.getGroupList();
+    private List<AppGroup> groupList;
     private List<String> groupNameList = new ArrayList<>();
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
@@ -49,12 +49,26 @@ public class GroupListActivity extends AppCompatActivity {
         // Setting the user to not get calls
         presentersManager.getClientPresenter().setState(UserState.DND);
 
+        groupPresenter.addGroupRemoveListener(new ContactsModule.GroupRemoveListener() {
+            @Override
+            public void onGroupRemoved(Group group) {
+                Toast.makeText(getApplicationContext(), "The group was removed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        groupPresenter.refreshGroups();
+        groupList = groupPresenter.getGroupList();
+        fillNameList();
+
         // Setting up the recycler view
         recyclerView = findViewById(R.id.group_list_view);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        fillNameList();
         adapter = new ListToViewAdapter(this, groupNameList, R.layout.group_list_line, R.id.groupName, R.id.select_button);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
@@ -90,13 +104,6 @@ public class GroupListActivity extends AppCompatActivity {
 
             }
         }));
-
-        groupPresenter.addGroupRemoveListener(new ContactsModule.GroupRemoveListener() {
-            @Override
-            public void onGroupRemoved(Group group) {
-                Toast.makeText(getApplicationContext(), "The group was removed", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override // inflating the menu
@@ -115,6 +122,9 @@ public class GroupListActivity extends AppCompatActivity {
             case R.id.show_group_members_item:
                 showGroupMembers();
                 break;
+            case R.id.add_group_item:
+                addGroup();
+                break;
         }
 
         return true;
@@ -130,6 +140,7 @@ public class GroupListActivity extends AppCompatActivity {
 
     private void fillNameList() {
         int size = groupList.size();
+        groupNameList.clear();
         for (int i = 0; i < size; i++ ) {
             groupNameList.add(groupList.get(i).getGroup().getDisplayName());
         }
@@ -171,6 +182,11 @@ public class GroupListActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         }
+    }
+
+    public void addGroup() {
+        Intent intent = new Intent(this, AddGroupActivity.class);
+        startActivity(intent);
     }
 
 }

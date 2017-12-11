@@ -189,7 +189,6 @@ public class FourButtonsActivity extends AppCompatActivity {
     }
 
     public void onClickAddGroup(View view) {
-        Intent intent = new Intent(this, AddGroupActivity.class);
-        startActivity(intent);
+        Toast.makeText(this, "Option moved to the group screen menu", Toast.LENGTH_SHORT).show();
     }
 }
