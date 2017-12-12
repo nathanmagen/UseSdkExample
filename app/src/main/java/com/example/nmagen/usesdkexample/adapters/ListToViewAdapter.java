@@ -20,6 +20,7 @@ import java.util.List;
  */
 
 public class ListToViewAdapter extends RecyclerView.Adapter {
+    public static final int NO_BUTTON = -1;
     private List<String> groupList;
     private Activity activity;
     private int layoutId, textViewId, buttonId;
@@ -32,7 +33,7 @@ public class ListToViewAdapter extends RecyclerView.Adapter {
             super(v);
             view = v;
             groupNameView = v.findViewById(textViewId);
-            if ( buttonId != ShowMembersActivity.NO_BUTTON) {
+            if ( buttonId != NO_BUTTON) {
                 selectButton = v.findViewById(buttonId);
             }
             else {

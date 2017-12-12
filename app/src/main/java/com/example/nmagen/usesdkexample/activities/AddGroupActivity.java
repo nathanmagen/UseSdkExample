@@ -44,7 +44,7 @@ public class AddGroupActivity extends AppCompatActivity {
         groupPresenter.addGroupAddListener(new ContactsModule.GroupAddListener() {
             @Override
             public void onGroupAdded(Group group) {
-                Toast.makeText(getApplicationContext(), group.getDisplayName() + " added successfully", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), group.getDisplayName() + " added successfully, Please add contacts", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -129,7 +129,11 @@ public class AddGroupActivity extends AppCompatActivity {
             return;
         }
 
+        recyclerView.setVisibility(View.VISIBLE);
+        // findViewById(R.id.done_button).setVisibility(View.VISIBLE);
         findViewById(R.id.done_button).setEnabled(true);
+
+        view.setVisibility(View.INVISIBLE);
 
         groupPresenter.addGroup(groupName);
 

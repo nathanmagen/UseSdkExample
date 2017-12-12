@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -109,9 +110,6 @@ public class FourButtonsActivity extends AppCompatActivity {
         presentersManager.getClientPresenter().setState(UserState.ONLINE);
         callPresenter.setCallCallbacks(callCallbacks);
 
-        setCallOptionsNameList();
-        setRecyclerView();
-
         Button pttButton = findViewById(R.id.ptt_button); // assigning functionality to ptt button for pressing and releasing
         pttButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -132,13 +130,16 @@ public class FourButtonsActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        setCallOptionsNameList();
+        setRecyclerView();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         presentersManager.getClientPresenter().setState(UserState.ONLINE);
-        findViewById(R.id.call_button).setEnabled(false);
+        // findViewById(R.id.call_button).setEnabled(false);
     }
 
     @Override // inflating the menu
@@ -167,6 +168,7 @@ public class FourButtonsActivity extends AppCompatActivity {
                 if (!isGroupFound(callOptionsList, selectedGroup.getGroup().getDisplayName())) {
                     callOptionsList.add(selectedGroup);
                     setCallOptionsNameList();
+                    findViewById(R.id.call_button).setEnabled(true);
                     adapter.notifyDataSetChanged();
                 }
                 else {
@@ -177,14 +179,16 @@ public class FourButtonsActivity extends AppCompatActivity {
                 String group2RemoveName = data.getStringExtra(REMOVE_GROUP_TAG);
                 removeGroupsWithName(group2RemoveName);
                 setCallOptionsNameList();
-                if (callOptionsList.size() > 0) {
-                    adapter.notifyDataSetChanged();
-                }
+                adapter.notifyDataSetChanged();
             }
         }
     }
 
     public void onCallClick(View view) {
+        if (presentersManager.getGroupPresenter().isGroupEmpty(selectedGroup)) {
+            Toast.makeText(this, "No members in group", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (!callPresenter.callGroup(selectedGroup)) {
             Toast.makeText(getApplicationContext(), "Call to " + selectedGroup.getGroup().getDisplayName() + " has failed", Toast.LENGTH_SHORT).show();
         }
@@ -241,7 +245,7 @@ public class FourButtonsActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        adapter = new ListToViewAdapter(this, callOptionsNameList, R.layout.call_option_list_line, R.id.call_option_name, ShowMembersActivity.NO_BUTTON); //TODO - change NO_BUTTON class
+        adapter = new ListToViewAdapter(this, callOptionsNameList, R.layout.call_option_list_line, R.id.call_option_name, ListToViewAdapter.NO_BUTTON);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
@@ -281,9 +285,28 @@ public class FourButtonsActivity extends AppCompatActivity {
 
             @Override
             public void onLongClick(View view, int position) {
-
+                if (!callOptionsList.isEmpty()) {
+                    ImageButton trashButt = view.findViewById(R.id.image_button_delete);
+                    trashButt.setVisibility(View.VISIBLE);
+                    trashButt.setTag(position);
+                    /*
+                    callOptionsList.remove(position);
+                    setCallOptionsNameList();
+                    adapter.notifyDataSetChanged();
+                    findViewById(R.id.call_button).setEnabled(false);
+                    */
+                }
             }
         }));
+    }
+
+    public void onClickDelete(View view) {
+        int pos = (int)view.getTag();
+        callOptionsList.remove(pos);
+        setCallOptionsNameList();
+        adapter.notifyDataSetChanged();
+        findViewById(R.id.call_button).setEnabled(false);
+        view.setVisibility(View.INVISIBLE);
     }
 
     private void removeGroupsWithName(final String group2RemoveName) {

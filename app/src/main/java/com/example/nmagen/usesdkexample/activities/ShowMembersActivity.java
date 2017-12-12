@@ -16,7 +16,6 @@ import com.example.nmagen.usesdkexample.presenters.PresentersManager;
 import java.util.List;
 
 public class ShowMembersActivity extends AppCompatActivity {
-    public static final int NO_BUTTON = -1;
     PresentersManager presentersManager = PresentersManager.getInstance();
     GroupPresenter groupPresenter = presentersManager.getGroupPresenter();
     List<AppGroup> groupList = groupPresenter.getGroupList();
@@ -41,7 +40,7 @@ public class ShowMembersActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        adapter = new ListToViewAdapter(this, groupMembersNameList, R.layout.group_member_list_line, R.id.groupMemberName, NO_BUTTON);
+        adapter = new ListToViewAdapter(this, groupMembersNameList, R.layout.group_member_list_line, R.id.groupMemberName, ListToViewAdapter.NO_BUTTON);
         recyclerView.setAdapter(adapter);
     }
 

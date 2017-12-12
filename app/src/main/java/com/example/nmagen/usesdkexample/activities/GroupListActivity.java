@@ -55,11 +55,7 @@ public class GroupListActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "The group was removed", Toast.LENGTH_SHORT).show();
             }
         });
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
         groupPresenter.refreshGroups();
         groupList = groupPresenter.getGroupList();
         fillNameList();
@@ -104,6 +100,15 @@ public class GroupListActivity extends AppCompatActivity {
 
             }
         }));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        groupPresenter.refreshGroups();
+        groupList = groupPresenter.getGroupList();
+        fillNameList();
+        adapter.notifyDataSetChanged();
     }
 
     @Override // inflating the menu

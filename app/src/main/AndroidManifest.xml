@@ -22,8 +22,10 @@
         </activity>
         <activity android:name=".activities.FourButtonsActivity" />
         <activity android:name=".activities.GroupListActivity" />
-        <activity android:name=".activities.AddGroupActivity" />
-        <activity android:name=".activities.ShowMembersActivity"></activity>
+        <activity
+            android:name=".activities.AddGroupActivity"
+            android:windowSoftInputMode="stateVisible"/>
+        <activity android:name=".activities.ShowMembersActivity"/>
     </application>
 
 </manifest>
