@@ -73,6 +73,30 @@ public class ListToViewAdapter extends RecyclerView.Adapter {
         else if (activity instanceof AddGroupActivity) {
             AddGroupActivity a = (AddGroupActivity)activity;
             a.unSelectContact(position);
+            // a.unAdd(position);
+        }
+    }
+
+    @Override
+    public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
+        ViewHolder lHolder = (ViewHolder) holder;
+        int pos = lHolder.getAdapterPosition();
+        if (activity instanceof GroupListActivity) {
+            GroupListActivity glActivity = (GroupListActivity) activity;
+            if (pos != glActivity.clickedOnGroupPosition) {
+                glActivity.unSelectGroup(pos);
+                lHolder.view.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimary));
+                lHolder.selectButton.setEnabled(false);
+            }
+        }
+        else if (activity instanceof AddGroupActivity) {
+            AddGroupActivity agActivity = (AddGroupActivity) activity;
+            if (pos != agActivity.clickedOnContactPosition) {
+                agActivity.unSelectContact(pos);
+                lHolder.view.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimary));
+                lHolder.view.findViewById(R.id.add_button).setEnabled(false);
+                lHolder.view.findViewById(R.id.remove_button).setEnabled(false);
+            }
         }
     }
 

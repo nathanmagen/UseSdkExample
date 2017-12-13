@@ -59,6 +59,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (clientPresenter.isSignedIn()) {
+            clientPresenter.signOout();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         clientPresenter.stop();
         Log.d(LOG_TAG, "App ended");

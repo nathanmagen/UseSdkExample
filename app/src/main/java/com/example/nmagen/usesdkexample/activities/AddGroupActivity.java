@@ -35,6 +35,7 @@ public class AddGroupActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
+    public int clickedOnContactPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +60,7 @@ public class AddGroupActivity extends AppCompatActivity {
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
+                clickedOnContactPosition = position;
                 AppContact clickedContact = contactsList.get(position);
                 if (!clickedContact.isSelected()) {
                     // select procedure
@@ -99,7 +101,9 @@ public class AddGroupActivity extends AppCompatActivity {
 
     public void onClickAdd(View view) {
         int pos = (int)view.getTag();
-        View v = recyclerView.getChildAt(pos);
+        LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
+        int newPos = pos - linearLayoutManager.findFirstVisibleItemPosition();
+        View v = recyclerView.getChildAt(newPos);
         Button removeButt = v.findViewById(R.id.remove_button);
         removeButt.setTag(pos);
         removeButt.setEnabled(true);
@@ -111,7 +115,9 @@ public class AddGroupActivity extends AppCompatActivity {
 
     public void onClickRemove(View view) {
         int pos = (int)view.getTag();
-        View v = recyclerView.getChildAt(pos);
+        LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
+        int newPos = pos - linearLayoutManager.findFirstVisibleItemPosition();
+        View v = recyclerView.getChildAt(newPos);
         Button addButt = v.findViewById(R.id.add_button);
         view.setEnabled(false);
         addButt.setEnabled(true);
@@ -127,6 +133,12 @@ public class AddGroupActivity extends AppCompatActivity {
         if (groupName.matches("")) {
             Toast.makeText(this, "No group name was entered ", Toast.LENGTH_LONG).show();
             return;
+        }
+
+        View focused = this.getCurrentFocus();
+        if (focused != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(focused.getWindowToken(), 0);
         }
 
         recyclerView.setVisibility(View.VISIBLE);
@@ -181,11 +193,14 @@ public class AddGroupActivity extends AppCompatActivity {
         View v;
         LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         int firstVisiblePos = linearLayoutManager.findFirstVisibleItemPosition();
-        int itemCount = linearLayoutManager.findLastVisibleItemPosition() - firstVisiblePos + 1;
+        int visibleItemCount = linearLayoutManager.findLastVisibleItemPosition() - firstVisiblePos + 1;
+        int itemCount = linearLayoutManager.getItemCount();
         for (int i = 0; i < itemCount; i++) {
-            AppContact ac = contactsList.get(i + firstVisiblePos);
+            AppContact ac = contactsList.get(i);
             ac.setIsSelected(false);
             ac.setIsAdded(false);
+        }
+        for (int i = 0; i < visibleItemCount; i++) {
             v = recyclerView.getChildAt(i);
             Button addButt = v.findViewById(R.id.add_button);
             addButt.setEnabled(true);
@@ -197,4 +212,5 @@ public class AddGroupActivity extends AppCompatActivity {
     public void unSelectContact(int pos) {
         contactsList.get(pos).setIsSelected(false);
     }
+
 }

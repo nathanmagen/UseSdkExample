@@ -38,6 +38,10 @@ public class ClientPresenter {
         return client.isSignedIn();
     }
 
+    public void signOout() {
+        client.signOut();
+    }
+
     public void setState(UserState state) {
         client.setUserState(state);
     }

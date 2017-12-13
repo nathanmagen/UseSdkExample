@@ -39,7 +39,7 @@ public class GroupListActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
-    private int clickedOnGroupPosition = NO_GROUP_SELECTED;
+    public int clickedOnGroupPosition = NO_GROUP_SELECTED;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
