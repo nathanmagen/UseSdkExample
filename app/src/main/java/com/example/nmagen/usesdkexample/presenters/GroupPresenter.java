@@ -111,4 +111,8 @@ public class GroupPresenter {
         }
         return groupMembersNameList;
     }
+
+    public boolean isGroupAvailable(AppGroup group) {
+        return (group.getGroup().getState() == Group.State.AVAILABLE || group.getGroup().getState() == Group.State.ACTIVE);
+    }
 }

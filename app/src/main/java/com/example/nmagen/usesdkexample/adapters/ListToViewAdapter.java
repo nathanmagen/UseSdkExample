@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.example.nmagen.usesdkexample.R;
 import com.example.nmagen.usesdkexample.activities.AddGroupActivity;
+import com.example.nmagen.usesdkexample.activities.FourButtonsActivity;
 import com.example.nmagen.usesdkexample.activities.GroupListActivity;
 import com.example.nmagen.usesdkexample.activities.ShowMembersActivity;
 
@@ -73,7 +74,12 @@ public class ListToViewAdapter extends RecyclerView.Adapter {
         else if (activity instanceof AddGroupActivity) {
             AddGroupActivity a = (AddGroupActivity)activity;
             a.unSelectContact(position);
-            // a.unAdd(position);
+        }
+        else if (activity instanceof FourButtonsActivity) {
+            FourButtonsActivity a = (FourButtonsActivity) activity;
+            if (!a.isNoCallOptions()) {
+                a.unSelectCallOption(position);
+            }
         }
     }
 
@@ -96,6 +102,15 @@ public class ListToViewAdapter extends RecyclerView.Adapter {
                 lHolder.view.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimary));
                 lHolder.view.findViewById(R.id.add_button).setEnabled(false);
                 lHolder.view.findViewById(R.id.remove_button).setEnabled(false);
+            }
+        }
+        else if (activity instanceof FourButtonsActivity) {
+            FourButtonsActivity fbActivity = (FourButtonsActivity) activity;
+            if (!fbActivity.isNoCallOptions()) {
+                if (pos != fbActivity.clickedCallOptionPosition) {
+                    fbActivity.unSelectCallOption(pos);
+                    lHolder.view.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimary));
+                }
             }
         }
     }

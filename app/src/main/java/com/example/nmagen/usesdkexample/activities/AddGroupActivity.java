@@ -135,6 +135,7 @@ public class AddGroupActivity extends AppCompatActivity {
             return;
         }
 
+        // Hiding the soft keyboard down
         View focused = this.getCurrentFocus();
         if (focused != null) {
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -142,7 +143,6 @@ public class AddGroupActivity extends AppCompatActivity {
         }
 
         recyclerView.setVisibility(View.VISIBLE);
-        // findViewById(R.id.done_button).setVisibility(View.VISIBLE);
         findViewById(R.id.done_button).setEnabled(true);
 
         view.setVisibility(View.INVISIBLE);

@@ -28,6 +28,7 @@ import com.example.nmagen.usesdkexample.adapters.ListToViewAdapter;
 import com.example.nmagen.usesdkexample.data.AppGroup;
 import com.example.nmagen.usesdkexample.listeners.RecyclerTouchListener;
 import com.example.nmagen.usesdkexample.presenters.CallPresenter;
+import com.example.nmagen.usesdkexample.presenters.GroupPresenter;
 import com.example.nmagen.usesdkexample.presenters.PresentersManager;
 import com.example.nmagen.usesdkexample.presenters.SOSPresenter;
 
@@ -41,6 +42,7 @@ public class FourButtonsActivity extends AppCompatActivity {
     public static final String REMOVE_GROUP_TAG = "Remove group tag";
     public static final int REQUEST_CODE = 1;
     public static final int RESULT_REMOVE_GROUP = -0xd0d1;
+    public int clickedCallOptionPosition = -1;
     private final String NO_GROUPS_CHOSEN = "No groups chosen";
     private AppGroup selectedGroup = null;
     private List<AppGroup> callOptionsList = new ArrayList<>();
@@ -185,12 +187,18 @@ public class FourButtonsActivity extends AppCompatActivity {
     }
 
     public void onCallClick(View view) {
-        if (presentersManager.getGroupPresenter().isGroupEmpty(selectedGroup)) {
+        GroupPresenter groupPresenter = presentersManager.getGroupPresenter();
+        if (groupPresenter.isGroupEmpty(selectedGroup)) {
             Toast.makeText(this, "No members in group", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (!callPresenter.callGroup(selectedGroup)) {
-            Toast.makeText(getApplicationContext(), "Call to " + selectedGroup.getGroup().getDisplayName() + " has failed", Toast.LENGTH_SHORT).show();
+        if (groupPresenter.isGroupAvailable(selectedGroup)) {
+            if (!callPresenter.callGroup(selectedGroup)) {
+                Toast.makeText(getApplicationContext(), "Call to " + selectedGroup.getGroup().getDisplayName() + " has failed", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else {
+            Toast.makeText(this, "The group is not available for call", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -250,6 +258,7 @@ public class FourButtonsActivity extends AppCompatActivity {
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
+                clickedCallOptionPosition = position;
                 if (callOptionsList.size() == 0) {
                     return;
                 }
@@ -307,6 +316,14 @@ public class FourButtonsActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
         findViewById(R.id.call_button).setEnabled(false);
         view.setVisibility(View.INVISIBLE);
+    }
+
+    public void unSelectCallOption(int pos) {
+        callOptionsList.get(pos).setUnSelected();
+    }
+
+    public boolean isNoCallOptions() {
+        return callOptionsList.isEmpty();
     }
 
     private void removeGroupsWithName(final String group2RemoveName) {
