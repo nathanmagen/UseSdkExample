@@ -146,7 +146,7 @@ public class AddGroupActivity extends AppCompatActivity {
         findViewById(R.id.done_button).setEnabled(true);
 
         view.setVisibility(View.INVISIBLE);
-
+        // TODO - add progress bar
         groupPresenter.addGroup(groupName);
 
     }
@@ -163,7 +163,7 @@ public class AddGroupActivity extends AppCompatActivity {
         String groupName = groupNameView.getText().toString();
         groupPresenter.refreshGroups();
         AppGroup selectedGroup = groupPresenter.getGroupByName(groupName);
-
+        // TODO - add progress bar
         for (int i = 0; i < size; i++) {
             groupPresenter.addContactToGroup(contactsToAdd.get(i).getContact().getId(), selectedGroup.getGroup().getId());
         }

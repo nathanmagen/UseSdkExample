@@ -16,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +48,7 @@ public class FourButtonsActivity extends AppCompatActivity {
     private AppGroup selectedGroup = null;
     private List<AppGroup> callOptionsList = new ArrayList<>();
     private List<String> callOptionsNameList = new ArrayList<>();
+    private ProgressBar progressBar;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -109,8 +111,11 @@ public class FourButtonsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_four_buttons);
 
+        progressBar = findViewById(R.id.progressBarCalls);
+        progressBar.setVisibility(View.VISIBLE);
         presentersManager.getClientPresenter().setState(UserState.ONLINE);
         callPresenter.setCallCallbacks(callCallbacks);
+        progressBar.setVisibility(View.INVISIBLE);
 
         Button pttButton = findViewById(R.id.ptt_button); // assigning functionality to ptt button for pressing and releasing
         pttButton.setOnTouchListener(new View.OnTouchListener() {
@@ -140,7 +145,9 @@ public class FourButtonsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        progressBar.setVisibility(View.VISIBLE);
         presentersManager.getClientPresenter().setState(UserState.ONLINE);
+        progressBar.setVisibility(View.INVISIBLE);
         // findViewById(R.id.call_button).setEnabled(false);
     }
 
@@ -187,6 +194,7 @@ public class FourButtonsActivity extends AppCompatActivity {
     }
 
     public void onCallClick(View view) {
+        progressBar.setVisibility(View.VISIBLE);
         GroupPresenter groupPresenter = presentersManager.getGroupPresenter();
         if (groupPresenter.isGroupEmpty(selectedGroup)) {
             Toast.makeText(this, "No members in group", Toast.LENGTH_SHORT).show();
@@ -200,18 +208,22 @@ public class FourButtonsActivity extends AppCompatActivity {
         else {
             Toast.makeText(this, "The group is not available for call", Toast.LENGTH_SHORT).show();
         }
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     public void onEndCallClick(View view) {
+        progressBar.setVisibility(View.VISIBLE);
         if (callPresenter.isAbleToEndCall()) {
             callPresenter.endCall(); // Triggers the endCall callback
         }
         else {
             Toast.makeText(this, "Unable to end call", Toast.LENGTH_SHORT).show();
         }
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     public void onSOSClick() {
+        progressBar.setVisibility(View.VISIBLE);
         SOSPresenter sosPresenter = presentersManager.getSosPresenter();
         if (sosPresenter.isAvailable()) {
             sosPresenter.sendRegularSOS();
@@ -220,15 +232,8 @@ public class FourButtonsActivity extends AppCompatActivity {
         else {
             Toast.makeText(getApplicationContext(), "SOS is unavailable", Toast.LENGTH_LONG).show();
         }
+        progressBar.setVisibility(View.INVISIBLE);
     }
-
-    /*
-    public void onClickToast(View view) {
-        Button button = (Button) view;
-        String buttNum = button.getText().toString();
-        Toast.makeText(this, TEXT_PRELIM + buttNum, Toast.LENGTH_LONG).show();
-    }
-    */
 
     public void onClickGroups(View view) {
         Intent intent = new Intent(this, GroupListActivity.class);

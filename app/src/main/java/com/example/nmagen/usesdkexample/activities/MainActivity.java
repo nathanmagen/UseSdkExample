@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,7 +20,6 @@ import com.example.nmagen.usesdkexample.R;
 import com.example.nmagen.usesdkexample.presenters.ClientPresenter;
 import com.example.nmagen.usesdkexample.presenters.PresentersManager;
 
-import static android.os.SystemClock.sleep;
 
 public class MainActivity extends AppCompatActivity {
     public static final String LOG_TAG = MainActivity.class.getSimpleName() + "_NatesLog";
@@ -54,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
             EditText serverIdView = findViewById(R.id.serverId);
             serverIdView.setText(serverId);
         }
-
         clientPresenter.start(getApplicationContext());
     }
 
@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if (clientPresenter.isSignedIn()) {
             clientPresenter.signOout();
+            ((TextView) findViewById(R.id.textViewMsg2user)).setText("Signed out");
         }
     }
 
@@ -74,51 +75,65 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickSignIn(View view) {
+        final ProgressBar progressBar = findViewById(R.id.progressBarSignIn);
+
         if (clientPresenter.isSignedIn()) {
-           putMessage(ALREADY_SIGNED_IN_MSG);
-           startFourButtons();
+            putMessage(ALREADY_SIGNED_IN_MSG);
+            presentersManager.initModules();
+            Intent intent = new Intent(this, FourButtonsActivity.class);
+            startActivity(intent);
+            return;
         }
-        else {
-            EditText userNameView = findViewById(R.id.userName);
-            String userName = userNameView.getText().toString();
-            EditText passwordView = findViewById(R.id.password);
-            String password = passwordView.getText().toString();
-            EditText serverIdView = findViewById(R.id.serverId);
-            String serverId = serverIdView.getText().toString();
 
-            CheckBox rememberMe = findViewById(R.id.rememberCheckBox);
-            if (rememberMe.isChecked()) {
-                SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(getString(R.string.user_name),userName);
-                editor.putString(getString(R.string.password),password);
-                editor.putString(getString(R.string.server_id),serverId);
-                editor.commit();
-            }
+        EditText userNameView = findViewById(R.id.userName);
+        final String userName = userNameView.getText().toString();
+        EditText passwordView = findViewById(R.id.password);
+        final String password = passwordView.getText().toString();
+        EditText serverIdView = findViewById(R.id.serverId);
+        final String serverId = serverIdView.getText().toString();
 
-            clientPresenter.signIn(userName, password, serverId);
-            sleep(1000);
-            if (!clientPresenter.isSignedIn()) {
-                putMessage(ERR_SIGN_IN);
-            }
-            else {
-                putMessage(SIGNED_IN_MSG);
-                presentersManager.initModules();
+        CheckBox rememberMe = findViewById(R.id.rememberCheckBox);
+        if (rememberMe.isChecked()) {
+            SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(getString(R.string.user_name),userName);
+            editor.putString(getString(R.string.password),password);
+            editor.putString(getString(R.string.server_id),serverId);
+            editor.commit();
+        }
+
+        clientPresenter.signIn(userName, password, serverId);
+        new CountDownTimer(1000, 200) {
+            @Override
+            public void onFinish() {
+                progressBar.setVisibility(View.INVISIBLE);
                 startFourButtons();
             }
-        }
+
+            @Override
+            public void onTick(long millsTillFin) {
+                progressBar.setVisibility(View.VISIBLE);
+            }
+        }.start();
     }
 
     private void putMessage(String msg) {
         TextView textView = findViewById(R.id.textViewMsg2user);
         textView.setText(msg);
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     private void startFourButtons() {
-        sleep(1000);
-        Intent intent = new Intent(this, FourButtonsActivity.class);
-        startActivity(intent);
+        // sleep(1000);
+        if (clientPresenter.isSignedIn()) {
+            putMessage(SIGNED_IN_MSG);
+            presentersManager.initModules();
+            Intent intent = new Intent(this, FourButtonsActivity.class);
+            startActivity(intent);
+        }
+        else {
+            putMessage(ERR_SIGN_IN);
+        }
     }
 }
 
