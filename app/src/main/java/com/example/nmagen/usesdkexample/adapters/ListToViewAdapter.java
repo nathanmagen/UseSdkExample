@@ -94,6 +94,10 @@ public class ListToViewAdapter extends RecyclerView.Adapter {
                 lHolder.view.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimary));
                 lHolder.selectButton.setEnabled(false);
             }
+            else {
+                lHolder.view.setBackgroundColor(activity.getResources().getColor(R.color.colorAccent));
+                lHolder.selectButton.setEnabled(true);
+            }
         }
         else if (activity instanceof AddGroupActivity) {
             AddGroupActivity agActivity = (AddGroupActivity) activity;
@@ -103,6 +107,17 @@ public class ListToViewAdapter extends RecyclerView.Adapter {
                 lHolder.view.findViewById(R.id.add_button).setEnabled(false);
                 lHolder.view.findViewById(R.id.remove_button).setEnabled(false);
             }
+            else {
+                lHolder.view.setBackgroundColor(activity.getResources().getColor(R.color.colorAccent));
+                if (agActivity.isContactAdded(pos)) {
+                    lHolder.view.findViewById(R.id.add_button).setEnabled(false);
+                    lHolder.view.findViewById(R.id.remove_button).setEnabled(true);
+                }
+                else {
+                    lHolder.view.findViewById(R.id.add_button).setEnabled(true);
+                    lHolder.view.findViewById(R.id.remove_button).setEnabled(false);
+                }
+            }
         }
         else if (activity instanceof FourButtonsActivity) {
             FourButtonsActivity fbActivity = (FourButtonsActivity) activity;
@@ -110,6 +125,9 @@ public class ListToViewAdapter extends RecyclerView.Adapter {
                 if (pos != fbActivity.clickedCallOptionPosition) {
                     fbActivity.unSelectCallOption(pos);
                     lHolder.view.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimary));
+                }
+                else {
+                    lHolder.view.setBackgroundColor(activity.getResources().getColor(R.color.colorAccent));
                 }
             }
         }

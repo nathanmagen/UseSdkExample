@@ -20,12 +20,15 @@ import com.example.nmagen.usesdkexample.R;
 import com.example.nmagen.usesdkexample.presenters.ClientPresenter;
 import com.example.nmagen.usesdkexample.presenters.PresentersManager;
 
+import static android.os.SystemClock.sleep;
+
 
 public class MainActivity extends AppCompatActivity {
     public static final String LOG_TAG = MainActivity.class.getSimpleName() + "_NatesLog";
     private static final String SIGNED_IN_MSG = "Signed in";
     private static final String ALREADY_SIGNED_IN_MSG = "Already signed in";
     private static final String ERR_SIGN_IN  = "There was a problem signing in";
+    private int attempts = 0;
 
     PresentersManager presentersManager = PresentersManager.getInstance();
     ClientPresenter clientPresenter = presentersManager.getClientPresenter();
@@ -106,8 +109,23 @@ public class MainActivity extends AppCompatActivity {
         new CountDownTimer(1000, 200) {
             @Override
             public void onFinish() {
-                progressBar.setVisibility(View.INVISIBLE);
-                startFourButtons();
+                attempts = 0;
+                while(true) {
+                    if (clientPresenter.isSignedIn()) {
+                        progressBar.setVisibility(View.INVISIBLE);
+                        putMessage(SIGNED_IN_MSG);
+                        startFourButtons();
+                        break;
+                    }
+                    else {
+                        attempts++;
+                        if (attempts == 20) {
+                            putMessage(ERR_SIGN_IN);
+                            break;
+                        }
+                    }
+                    sleep(500);
+                }
             }
 
             @Override
@@ -124,7 +142,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startFourButtons() {
-        // sleep(1000);
+        // sleep(5000);
+        /*
         if (clientPresenter.isSignedIn()) {
             putMessage(SIGNED_IN_MSG);
             presentersManager.initModules();
@@ -134,6 +153,10 @@ public class MainActivity extends AppCompatActivity {
         else {
             putMessage(ERR_SIGN_IN);
         }
+        */
+        presentersManager.initModules();
+        Intent intent = new Intent(this, FourButtonsActivity.class);
+        startActivity(intent);
     }
 }
 

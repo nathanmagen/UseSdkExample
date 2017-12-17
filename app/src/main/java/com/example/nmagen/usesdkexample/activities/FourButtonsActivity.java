@@ -43,7 +43,8 @@ public class FourButtonsActivity extends AppCompatActivity {
     public static final String REMOVE_GROUP_TAG = "Remove group tag";
     public static final int REQUEST_CODE = 1;
     public static final int RESULT_REMOVE_GROUP = -0xd0d1;
-    public int clickedCallOptionPosition = -1;
+    private final int NO_OPTION_SELECTED = -1;
+    public int clickedCallOptionPosition = NO_OPTION_SELECTED;
     private final String NO_GROUPS_CHOSEN = "No groups chosen";
     private AppGroup selectedGroup = null;
     private List<AppGroup> callOptionsList = new ArrayList<>();
@@ -321,6 +322,7 @@ public class FourButtonsActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
         findViewById(R.id.call_button).setEnabled(false);
         view.setVisibility(View.INVISIBLE);
+        clickedCallOptionPosition = NO_OPTION_SELECTED;
     }
 
     public void unSelectCallOption(int pos) {

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddGroupActivity extends AppCompatActivity {
+    private final int NO_CONTACT_SELECTED = -1;
     private PresentersManager presentersManager = PresentersManager.getInstance();
     private GroupPresenter groupPresenter = presentersManager.getGroupPresenter();
     private List<AppContact> contactsList = groupPresenter.getContacts();
@@ -35,7 +36,7 @@ public class AddGroupActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
-    public int clickedOnContactPosition;
+    public int clickedOnContactPosition = NO_CONTACT_SELECTED;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +98,12 @@ public class AddGroupActivity extends AppCompatActivity {
 
             }
         } ));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        clickedOnContactPosition = NO_CONTACT_SELECTED;
     }
 
     public void onClickAdd(View view) {
@@ -211,6 +218,10 @@ public class AddGroupActivity extends AppCompatActivity {
 
     public void unSelectContact(int pos) {
         contactsList.get(pos).setIsSelected(false);
+    }
+
+    public boolean isContactAdded(int pos) {
+        return contactsList.get(pos).isAdded();
     }
 
 }

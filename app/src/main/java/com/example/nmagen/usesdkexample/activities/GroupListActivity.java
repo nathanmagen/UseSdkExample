@@ -109,6 +109,7 @@ public class GroupListActivity extends AppCompatActivity {
         groupList = groupPresenter.getGroupList();
         fillNameList();
         adapter.notifyDataSetChanged();
+        clickedOnGroupPosition = NO_GROUP_SELECTED;
     }
 
     @Override // inflating the menu
