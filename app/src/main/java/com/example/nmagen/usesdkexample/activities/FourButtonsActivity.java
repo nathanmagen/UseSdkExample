@@ -150,6 +150,7 @@ public class FourButtonsActivity extends AppCompatActivity {
         presentersManager.getClientPresenter().setState(UserState.ONLINE);
         progressBar.setVisibility(View.INVISIBLE);
         // findViewById(R.id.call_button).setEnabled(false);
+        clickedCallOptionPosition = NO_OPTION_SELECTED;
     }
 
     @Override // inflating the menu
@@ -197,17 +198,20 @@ public class FourButtonsActivity extends AppCompatActivity {
     public void onCallClick(View view) {
         progressBar.setVisibility(View.VISIBLE);
         GroupPresenter groupPresenter = presentersManager.getGroupPresenter();
+        /*
         if (groupPresenter.isGroupEmpty(selectedGroup)) {
             Toast.makeText(this, "No members in group", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.INVISIBLE);
             return;
         }
+        */
         if (groupPresenter.isGroupAvailable(selectedGroup)) {
             if (!callPresenter.callGroup(selectedGroup)) {
                 Toast.makeText(getApplicationContext(), "Call to " + selectedGroup.getGroup().getDisplayName() + " has failed", Toast.LENGTH_SHORT).show();
             }
         }
         else {
-            Toast.makeText(this, "The group is not available for call", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,selectedGroup.getGroup().getDisplayName() + " is not available for call", Toast.LENGTH_SHORT).show();
         }
         progressBar.setVisibility(View.INVISIBLE);
     }
