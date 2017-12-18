@@ -28,6 +28,8 @@ import java.util.List;
 
 import com.example.nmagen.usesdkexample.listeners.RecyclerTouchListener;
 
+import static android.os.SystemClock.sleep;
+
 
 public class GroupListActivity extends AppCompatActivity {
     private final int NO_GROUP_SELECTED = -1;
@@ -40,6 +42,7 @@ public class GroupListActivity extends AppCompatActivity {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     public int clickedOnGroupPosition = NO_GROUP_SELECTED;
+    private String groupNameToRemove = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +55,15 @@ public class GroupListActivity extends AppCompatActivity {
         groupPresenter.addGroupRemoveListener(new ContactsModule.GroupRemoveListener() {
             @Override
             public void onGroupRemoved(Group group) {
-                Toast.makeText(getApplicationContext(), "The group was removed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), groupNameToRemove + " was removed", Toast.LENGTH_SHORT).show();
+
+                findViewById(R.id.progressBarRemovingGroup).setVisibility(View.INVISIBLE);
+                recyclerView.setVisibility(View.VISIBLE);
+
+                Intent resultRemoveData = new Intent();
+                resultRemoveData.putExtra(FourButtonsActivity.REMOVE_GROUP_TAG, groupNameToRemove);
+                setResult(FourButtonsActivity.RESULT_REMOVE_GROUP, resultRemoveData);
+                finish();
             }
         });
 
@@ -123,7 +134,11 @@ public class GroupListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.remove_group_item:
-                removeGroup();
+                try {
+                    removeGroup();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 break;
             case R.id.show_group_members_item:
                 showGroupMembers();
@@ -156,24 +171,22 @@ public class GroupListActivity extends AppCompatActivity {
         groupList.get(pos).setUnSelected();
     }
 
-    public void removeGroup() {
+    public void removeGroup() throws InterruptedException {
         if (clickedOnGroupPosition == NO_GROUP_SELECTED) {
             Toast.makeText(this, "No group was selected", Toast.LENGTH_SHORT).show();
         }
         else {
-            AppGroup group2Remove = groupList.get(clickedOnGroupPosition);
-            if (group2Remove.getGroup().getType() != Group.Type.PERSONAL) {
+            AppGroup appGroup2Remove = groupList.get(clickedOnGroupPosition);
+            if (appGroup2Remove.getGroup().getType() != Group.Type.PERSONAL) {
                 Toast.makeText(this, "Can not remove non personal group", Toast.LENGTH_SHORT).show();
             }
             else {
-                groupPresenter.removeGroup(group2Remove.getGroup().getId());
+                groupPresenter.removeGroup(appGroup2Remove.getGroup().getId());
                 groupList.remove(clickedOnGroupPosition);
                 clickedOnGroupPosition = NO_GROUP_SELECTED;
-
-                Intent resultRemoveData = new Intent();
-                resultRemoveData.putExtra(FourButtonsActivity.REMOVE_GROUP_TAG, group2Remove.getGroup().getDisplayName());
-                setResult(FourButtonsActivity.RESULT_REMOVE_GROUP, resultRemoveData);
-                finish();
+                groupNameToRemove = appGroup2Remove.getGroup().getDisplayName();
+                findViewById(R.id.progressBarRemovingGroup).setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.INVISIBLE);
             }
         }
     }

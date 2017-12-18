@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -95,24 +94,21 @@ public class MainActivity extends AppCompatActivity {
         EditText serverIdView = findViewById(R.id.serverId);
         final String serverId = serverIdView.getText().toString();
 
-        CheckBox rememberMe = findViewById(R.id.rememberCheckBox);
-        if (rememberMe.isChecked()) {
-            SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(getString(R.string.user_name),userName);
-            editor.putString(getString(R.string.password),password);
-            editor.putString(getString(R.string.server_id),serverId);
-            editor.commit();
-        }
+        SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(getString(R.string.user_name),userName);
+        editor.putString(getString(R.string.password),password);
+        editor.putString(getString(R.string.server_id),serverId);
+        editor.commit();
 
         clientPresenter.signIn(userName, password, serverId);
         new CountDownTimer(1000, 200) {
             @Override
             public void onFinish() {
+                progressBar.setVisibility(View.INVISIBLE);
                 attempts = 0;
                 while(true) {
                     if (clientPresenter.isSignedIn()) {
-                        progressBar.setVisibility(View.INVISIBLE);
                         putMessage(SIGNED_IN_MSG);
                         startFourButtons();
                         break;

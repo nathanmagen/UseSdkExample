@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.TextView;
 
 import com.example.nmagen.usesdkexample.R;
 import com.example.nmagen.usesdkexample.adapters.ListToViewAdapter;
@@ -34,6 +35,9 @@ public class ShowMembersActivity extends AppCompatActivity {
         int selectedGroupPos = intent.getIntExtra(GroupListActivity.SELECTED_GROUP_KEY, 0);
         AppGroup selectedGroup = groupList.get(selectedGroupPos);
         groupMembersNameList = groupPresenter.getGroupMembersNameList(selectedGroup);
+
+        // Showing the group name in the text view
+        ((TextView) findViewById(R.id.groupName2ShowMembers)).setText(selectedGroup.getGroup().getDisplayName());
 
         // Setting up the recyclerView
         recyclerView = findViewById(R.id.group_member_list_view);

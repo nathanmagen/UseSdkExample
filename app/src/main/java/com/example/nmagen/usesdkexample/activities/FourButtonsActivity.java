@@ -149,8 +149,6 @@ public class FourButtonsActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         presentersManager.getClientPresenter().setState(UserState.ONLINE);
         progressBar.setVisibility(View.INVISIBLE);
-        // findViewById(R.id.call_button).setEnabled(false);
-        clickedCallOptionPosition = NO_OPTION_SELECTED;
     }
 
     @Override // inflating the menu
@@ -181,6 +179,8 @@ public class FourButtonsActivity extends AppCompatActivity {
                     setCallOptionsNameList();
                     findViewById(R.id.call_button).setEnabled(true);
                     adapter.notifyDataSetChanged();
+                    clickedCallOptionPosition = NO_OPTION_SELECTED;
+
                 }
                 else {
                     Toast.makeText(this, "Group already chosen", Toast.LENGTH_SHORT).show();
@@ -191,6 +191,9 @@ public class FourButtonsActivity extends AppCompatActivity {
                 removeGroupsWithName(group2RemoveName);
                 setCallOptionsNameList();
                 adapter.notifyDataSetChanged();
+                selectedGroup = null;
+                findViewById(R.id.call_button).setEnabled(false);
+                clickedCallOptionPosition = NO_OPTION_SELECTED;
             }
         }
     }
@@ -306,14 +309,13 @@ public class FourButtonsActivity extends AppCompatActivity {
             public void onLongClick(View view, int position) {
                 if (!callOptionsList.isEmpty()) {
                     ImageButton trashButt = view.findViewById(R.id.image_button_delete);
-                    trashButt.setVisibility(View.VISIBLE);
-                    trashButt.setTag(position);
-                    /*
-                    callOptionsList.remove(position);
-                    setCallOptionsNameList();
-                    adapter.notifyDataSetChanged();
-                    findViewById(R.id.call_button).setEnabled(false);
-                    */
+                    if (trashButt.getVisibility() == View.VISIBLE) {
+                        trashButt.setVisibility(View.INVISIBLE);
+                    }
+                    else {
+                        trashButt.setVisibility(View.VISIBLE);
+                        trashButt.setTag(position);
+                    }
                 }
             }
         }));
