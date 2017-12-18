@@ -33,6 +33,7 @@ public class AddGroupActivity extends AppCompatActivity {
     private List<AppContact> contactsList = groupPresenter.getContacts();
     private List<String> contactsNameList = new ArrayList<>();
     private List<AppContact> contactsToAdd = new ArrayList<>();
+    private ContactsModule.GroupAddListener groupAddListener = null;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -43,12 +44,14 @@ public class AddGroupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_group);
 
-        groupPresenter.addGroupAddListener(new ContactsModule.GroupAddListener() {
+        groupAddListener = new ContactsModule.GroupAddListener() {
             @Override
             public void onGroupAdded(Group group) {
-                Toast.makeText(getApplicationContext(), group.getDisplayName() + " added successfully, Please add contacts", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), group.getDisplayName() + " added successfully, Please add contacts", Toast.LENGTH_SHORT).show();
             }
-        });
+        };
+
+        groupPresenter.addGroupAddListener(groupAddListener);
 
         // Setting the recyclerView
         recyclerView = findViewById(R.id.contacts_list_view);
@@ -104,6 +107,12 @@ public class AddGroupActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         clickedOnContactPosition = NO_CONTACT_SELECTED;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        groupPresenter.removeGroupAddListener(groupAddListener);
     }
 
     public void onClickAdd(View view) {

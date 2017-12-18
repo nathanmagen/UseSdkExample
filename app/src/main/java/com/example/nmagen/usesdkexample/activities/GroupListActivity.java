@@ -38,6 +38,7 @@ public class GroupListActivity extends AppCompatActivity {
     private GroupPresenter groupPresenter = presentersManager.getGroupPresenter();
     private List<AppGroup> groupList;
     private List<String> groupNameList = new ArrayList<>();
+    private ContactsModule.GroupRemoveListener groupRemoveListener = null;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -52,7 +53,7 @@ public class GroupListActivity extends AppCompatActivity {
         // Setting the user to not get calls
         presentersManager.getClientPresenter().setState(UserState.DND);
 
-        groupPresenter.addGroupRemoveListener(new ContactsModule.GroupRemoveListener() {
+        groupRemoveListener = new ContactsModule.GroupRemoveListener() {
             @Override
             public void onGroupRemoved(Group group) {
                 Toast.makeText(getApplicationContext(), groupNameToRemove + " was removed", Toast.LENGTH_SHORT).show();
@@ -65,7 +66,7 @@ public class GroupListActivity extends AppCompatActivity {
                 setResult(FourButtonsActivity.RESULT_REMOVE_GROUP, resultRemoveData);
                 finish();
             }
-        });
+        };
 
         groupPresenter.refreshGroups();
         groupList = groupPresenter.getGroupList();
@@ -111,6 +112,18 @@ public class GroupListActivity extends AppCompatActivity {
 
             }
         }));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        groupPresenter.addGroupRemoveListener(groupRemoveListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        groupPresenter.removeGroupRemoveListener(groupRemoveListener);
     }
 
     @Override
