@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.MobileTornado.sdk.model.ContactsModule;
@@ -48,6 +49,9 @@ public class AddGroupActivity extends AppCompatActivity {
             @Override
             public void onGroupAdded(Group group) {
                 Toast.makeText(getApplicationContext(), group.getDisplayName() + " added successfully, Please add contacts", Toast.LENGTH_SHORT).show();
+                findViewById(R.id.addGroupProgressBar).setVisibility(View.INVISIBLE);
+                recyclerView.setVisibility(View.VISIBLE);
+                findViewById(R.id.done_button).setEnabled(true);
             }
         };
 
@@ -151,18 +155,15 @@ public class AddGroupActivity extends AppCompatActivity {
             return;
         }
 
-        // Hiding the soft keyboard down
+        // Hiding the soft keyboard
         View focused = this.getCurrentFocus();
         if (focused != null) {
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(focused.getWindowToken(), 0);
         }
 
-        recyclerView.setVisibility(View.VISIBLE);
-        findViewById(R.id.done_button).setEnabled(true);
-
         view.setVisibility(View.INVISIBLE);
-        // TODO - add progress bar
+        findViewById(R.id.addGroupProgressBar).setVisibility(View.VISIBLE);
         groupPresenter.addGroup(groupName);
 
     }
@@ -179,23 +180,20 @@ public class AddGroupActivity extends AppCompatActivity {
         String groupName = groupNameView.getText().toString();
         groupPresenter.refreshGroups();
         AppGroup selectedGroup = groupPresenter.getGroupByName(groupName);
-        // TODO - add progress bar
+
+        ProgressBar progressBar = findViewById(R.id.addGroupProgressBar);
+        progressBar.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
+
         for (int i = 0; i < size; i++) {
             groupPresenter.addContactToGroup(contactsToAdd.get(i).getContact().getId(), selectedGroup.getGroup().getId());
         }
 
+        progressBar.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.VISIBLE);
+
         unselectAll();
-
         finish();
-
-        /*
-        String mems = "";
-        for (int i = 0; i < size; i++) {
-            mems += contactsToAdd.get(i).getContact().getDisplayName();
-            mems += " ";
-        }
-        Toast.makeText(getApplicationContext(),"Members: " + mems, Toast.LENGTH_LONG).show();
-        */
     }
 
     private void fillNameList() {

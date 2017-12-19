@@ -201,13 +201,7 @@ public class FourButtonsActivity extends AppCompatActivity {
     public void onCallClick(View view) {
         progressBar.setVisibility(View.VISIBLE);
         GroupPresenter groupPresenter = presentersManager.getGroupPresenter();
-        /*
-        if (groupPresenter.isGroupEmpty(selectedGroup)) {
-            Toast.makeText(this, "No members in group", Toast.LENGTH_SHORT).show();
-            progressBar.setVisibility(View.INVISIBLE);
-            return;
-        }
-        */
+
         if (groupPresenter.isGroupAvailable(selectedGroup)) {
             if (!callPresenter.callGroup(selectedGroup)) {
                 Toast.makeText(getApplicationContext(), "Call to " + selectedGroup.getGroup().getDisplayName() + " has failed", Toast.LENGTH_SHORT).show();
@@ -324,6 +318,7 @@ public class FourButtonsActivity extends AppCompatActivity {
     public void onClickDelete(View view) {
         int pos = (int)view.getTag();
         callOptionsList.remove(pos);
+        callOptionsNameList.remove(pos);
         setCallOptionsNameList();
         adapter.notifyDataSetChanged();
         findViewById(R.id.call_button).setEnabled(false);

@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if (clientPresenter.isSignedIn()) {
             clientPresenter.signOout();
-            ((TextView) findViewById(R.id.textViewMsg2user)).setText("Signed out");
+            finish();
         }
     }
 
@@ -138,18 +138,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startFourButtons() {
-        // sleep(5000);
-        /*
-        if (clientPresenter.isSignedIn()) {
-            putMessage(SIGNED_IN_MSG);
-            presentersManager.initModules();
-            Intent intent = new Intent(this, FourButtonsActivity.class);
-            startActivity(intent);
-        }
-        else {
-            putMessage(ERR_SIGN_IN);
-        }
-        */
         presentersManager.initModules();
         Intent intent = new Intent(this, FourButtonsActivity.class);
         startActivity(intent);
