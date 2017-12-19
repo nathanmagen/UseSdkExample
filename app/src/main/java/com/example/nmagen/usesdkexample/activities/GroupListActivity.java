@@ -213,13 +213,19 @@ public class GroupListActivity extends AppCompatActivity {
             Toast.makeText(this, "No group was selected", Toast.LENGTH_SHORT).show();
         }
         else {
-            if (groupPresenter.isGroupEmpty(groupList.get(clickedOnGroupPosition))) {
-                Toast.makeText(this, "No members in group", Toast.LENGTH_SHORT).show();
+            AppGroup selectedGroup = groupList.get(clickedOnGroupPosition);
+            if (selectedGroup.getGroup().isLarge()) {
+                Toast.makeText(this, "Large group, can't show members", Toast.LENGTH_SHORT).show();
             }
             else {
-                Intent intent = new Intent(this, ShowMembersActivity.class);
-                intent.putExtra(SELECTED_GROUP_KEY, clickedOnGroupPosition);
-                startActivity(intent);
+                if (groupPresenter.isGroupEmpty(selectedGroup)) {
+                    Toast.makeText(this, "No members in group", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Intent intent = new Intent(this, ShowMembersActivity.class);
+                    intent.putExtra(SELECTED_GROUP_KEY, clickedOnGroupPosition);
+                    startActivity(intent);
+                }
             }
         }
     }
