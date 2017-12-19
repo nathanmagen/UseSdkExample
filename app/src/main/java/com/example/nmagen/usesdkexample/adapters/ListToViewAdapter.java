@@ -89,7 +89,7 @@ public class ListToViewAdapter extends RecyclerView.Adapter {
         int pos = lHolder.getAdapterPosition();
         if (activity instanceof GroupListActivity) {
             GroupListActivity glActivity = (GroupListActivity) activity;
-            if (pos != glActivity.clickedOnGroupPosition) {
+            if (pos != glActivity.getClickedOnGroupPosition()) {
                 glActivity.unSelectGroup(pos);
                 lHolder.view.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimary));
                 lHolder.selectButton.setEnabled(false);
@@ -101,7 +101,7 @@ public class ListToViewAdapter extends RecyclerView.Adapter {
         }
         else if (activity instanceof AddGroupActivity) {
             AddGroupActivity agActivity = (AddGroupActivity) activity;
-            if (pos != agActivity.clickedOnContactPosition) {
+            if (pos != agActivity.getClickedOnContactPosition()) {
                 agActivity.unSelectContact(pos);
                 lHolder.view.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimary));
                 lHolder.view.findViewById(R.id.add_button).setEnabled(false);
@@ -122,12 +122,16 @@ public class ListToViewAdapter extends RecyclerView.Adapter {
         else if (activity instanceof FourButtonsActivity) {
             FourButtonsActivity fbActivity = (FourButtonsActivity) activity;
             if (!fbActivity.isNoCallOptions()) {
-                if (pos != fbActivity.clickedCallOptionPosition) {
+                if (pos != fbActivity.getClickedCallOptionPosition()) {
                     fbActivity.unSelectCallOption(pos);
                     lHolder.view.setBackgroundColor(activity.getResources().getColor(R.color.colorPrimary));
                 }
                 else {
                     lHolder.view.setBackgroundColor(activity.getResources().getColor(R.color.colorAccent));
+                }
+
+                if (pos != fbActivity.getLongClickedOnPosition()) {
+                    lHolder.view.findViewById(R.id.image_button_delete).setVisibility(View.INVISIBLE);
                 }
             }
         }

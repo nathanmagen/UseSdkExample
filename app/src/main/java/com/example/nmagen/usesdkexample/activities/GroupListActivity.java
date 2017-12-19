@@ -42,7 +42,7 @@ public class GroupListActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
-    public int clickedOnGroupPosition = NO_GROUP_SELECTED;
+    private int clickedOnGroupPosition = NO_GROUP_SELECTED;
     private String groupNameToRemove = null;
 
     @Override
@@ -170,6 +170,10 @@ public class GroupListActivity extends AppCompatActivity {
         resultData.putExtra(FourButtonsActivity.GROUP_TAG, pos);
         setResult(Activity.RESULT_OK, resultData);
         finish();
+    }
+
+    public int getClickedOnGroupPosition() {
+        return clickedOnGroupPosition;
     }
 
     private void fillNameList() {

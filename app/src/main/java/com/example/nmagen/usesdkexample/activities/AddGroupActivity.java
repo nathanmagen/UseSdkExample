@@ -38,7 +38,7 @@ public class AddGroupActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
-    public int clickedOnContactPosition = NO_CONTACT_SELECTED;
+    private int clickedOnContactPosition = NO_CONTACT_SELECTED;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -229,6 +229,10 @@ public class AddGroupActivity extends AppCompatActivity {
 
     public boolean isContactAdded(int pos) {
         return contactsList.get(pos).isAdded();
+    }
+
+    public int getClickedOnContactPosition() {
+        return clickedOnContactPosition;
     }
 
 }

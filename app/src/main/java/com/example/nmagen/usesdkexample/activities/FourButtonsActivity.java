@@ -44,7 +44,8 @@ public class FourButtonsActivity extends AppCompatActivity {
     public static final int REQUEST_CODE = 1;
     public static final int RESULT_REMOVE_GROUP = -0xd0d1;
     private final int NO_OPTION_SELECTED = -1;
-    public int clickedCallOptionPosition = NO_OPTION_SELECTED;
+    private int clickedCallOptionPosition = NO_OPTION_SELECTED;
+    private int longClickedOnPosition = NO_OPTION_SELECTED;
     private final String NO_GROUPS_CHOSEN = "No groups chosen";
     private AppGroup selectedGroup = null;
     private List<AppGroup> callOptionsList = new ArrayList<>();
@@ -302,13 +303,20 @@ public class FourButtonsActivity extends AppCompatActivity {
             @Override
             public void onLongClick(View view, int position) {
                 if (!callOptionsList.isEmpty()) {
-                    ImageButton trashButt = view.findViewById(R.id.image_button_delete);
-                    if (trashButt.getVisibility() == View.VISIBLE) {
-                        trashButt.setVisibility(View.INVISIBLE);
+                    // Setting invisible image of the last view if it is onscreen
+                    LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
+                    int firstVisible = linearLayoutManager.findFirstVisibleItemPosition();
+                    int lastVisible = linearLayoutManager.findLastVisibleItemPosition();
+                    if (longClickedOnPosition >= firstVisible && longClickedOnPosition <= lastVisible) {
+                        recyclerView.getChildAt(longClickedOnPosition - firstVisible).findViewById(R.id.image_button_delete).setVisibility(View.INVISIBLE);
                     }
-                    else {
+
+                    // Setting the visibility of the current image
+                    if (position != longClickedOnPosition) {
+                        ImageButton trashButt = view.findViewById(R.id.image_button_delete);
                         trashButt.setVisibility(View.VISIBLE);
                         trashButt.setTag(position);
+                        longClickedOnPosition = position;
                     }
                 }
             }
@@ -324,6 +332,7 @@ public class FourButtonsActivity extends AppCompatActivity {
         findViewById(R.id.call_button).setEnabled(false);
         view.setVisibility(View.INVISIBLE);
         clickedCallOptionPosition = NO_OPTION_SELECTED;
+        longClickedOnPosition = NO_OPTION_SELECTED;
     }
 
     public void unSelectCallOption(int pos) {
@@ -332,6 +341,14 @@ public class FourButtonsActivity extends AppCompatActivity {
 
     public boolean isNoCallOptions() {
         return callOptionsList.isEmpty();
+    }
+
+    public int getClickedCallOptionPosition() {
+        return clickedCallOptionPosition;
+    }
+
+    public int getLongClickedOnPosition() {
+        return longClickedOnPosition;
     }
 
     private void removeGroupsWithName(final String group2RemoveName) {
