@@ -215,7 +215,7 @@ public class GroupListActivity extends AppCompatActivity {
         else {
             AppGroup selectedGroup = groupList.get(clickedOnGroupPosition);
             if (selectedGroup.getGroup().isLarge()) {
-                Toast.makeText(this, "Large group, can't show members", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Large group, member count shown on call", Toast.LENGTH_SHORT).show();
             }
             else {
                 if (groupPresenter.isGroupEmpty(selectedGroup)) {
@@ -234,5 +234,4 @@ public class GroupListActivity extends AppCompatActivity {
         Intent intent = new Intent(this, AddGroupActivity.class);
         startActivity(intent);
     }
-
 }

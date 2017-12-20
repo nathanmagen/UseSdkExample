@@ -4,6 +4,7 @@ import com.MobileTornado.sdk.TornadoClient;
 import com.MobileTornado.sdk.model.ContactsModule;
 import com.MobileTornado.sdk.model.data.Contact;
 import com.MobileTornado.sdk.model.data.Group;
+import com.MobileTornado.sdk.model.data.LargeGroupContactsInfo;
 import com.example.nmagen.usesdkexample.activities.AddGroupActivity;
 import com.example.nmagen.usesdkexample.data.AppContact;
 import com.example.nmagen.usesdkexample.data.AppGroup;
@@ -122,5 +123,15 @@ public class GroupPresenter {
 
     public boolean isGroupAvailable(AppGroup group) {
         return (group.getGroup().getState() == Group.State.AVAILABLE || group.getGroup().getState() == Group.State.ACTIVE);
+    }
+
+    public int getLargeGroupCallContactsCount() {
+        LargeGroupContactsInfo largeGroupContactsInfo = contactsModule.getCurrentLargeGroupCallContactsInfo();
+        return largeGroupContactsInfo.getContactsCount();
+    }
+
+    public int getLargeGroupCallActiveContactsCount() {
+        LargeGroupContactsInfo largeGroupContactsInfo = contactsModule.getCurrentLargeGroupCallContactsInfo();
+        return largeGroupContactsInfo.getActiveContactsCount();
     }
 }

@@ -51,6 +51,7 @@ public class FourButtonsActivity extends AppCompatActivity {
     private List<AppGroup> callOptionsList = new ArrayList<>();
     private List<String> callOptionsNameList = new ArrayList<>();
     private ProgressBar progressBar;
+    private TextView chosenGroupTextView;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -72,7 +73,16 @@ public class FourButtonsActivity extends AppCompatActivity {
             findViewById(R.id.ptt_button).setEnabled(true);
             findViewById(R.id.call_button).setEnabled(false);
             findViewById(R.id.end_call_button).setEnabled(true);
-            Toast.makeText(getApplicationContext(), "On call with " + callInfo.getName(), Toast.LENGTH_SHORT).show();
+            String msg = "On call with " + callInfo.getName();
+            chosenGroupTextView.setText(msg);
+            if ( callInfo.isLargeGroupCall()) {
+                int active = presentersManager.getGroupPresenter().getLargeGroupCallActiveContactsCount();
+                int members = presentersManager.getGroupPresenter().getLargeGroupCallContactsCount();
+                Toast.makeText(getApplicationContext(), callInfo.getName() + " " + active + "/" + members + " active members", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Toast.makeText(getApplicationContext(), "On call with " + callInfo.getName(), Toast.LENGTH_SHORT).show();
+            }
         }
 
         @Override
@@ -86,6 +96,11 @@ public class FourButtonsActivity extends AppCompatActivity {
             findViewById(R.id.end_call_button).setEnabled(false);
             if (selectedGroup != null) {
                 findViewById(R.id.call_button).setEnabled(true);
+                String msg = "Chosen group: " + selectedGroup.getGroup().getDisplayName();
+                chosenGroupTextView.setText(msg);
+            }
+            else {
+                chosenGroupTextView.setText(NO_GROUPS_CHOSEN);
             }
             Toast.makeText(getApplicationContext(), "Call to " + callInfo.getName() + " ended", Toast.LENGTH_SHORT).show();
         }
@@ -114,10 +129,14 @@ public class FourButtonsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_four_buttons);
 
         progressBar = findViewById(R.id.progressBarCalls);
+        chosenGroupTextView = findViewById(R.id.chosenGroupTextView);
+        chosenGroupTextView.setText(NO_GROUPS_CHOSEN);
+
         progressBar.setVisibility(View.VISIBLE);
         presentersManager.getClientPresenter().setState(UserState.ONLINE);
-        callPresenter.setCallCallbacks(callCallbacks);
         progressBar.setVisibility(View.INVISIBLE);
+
+        callPresenter.setCallCallbacks(callCallbacks);
 
         Button pttButton = findViewById(R.id.ptt_button); // assigning functionality to ptt button for pressing and releasing
         pttButton.setOnTouchListener(new View.OnTouchListener() {
@@ -142,6 +161,21 @@ public class FourButtonsActivity extends AppCompatActivity {
 
         setCallOptionsNameList();
         setRecyclerView();
+    }
+
+    /*
+    @Override
+    protected void onStart() {
+        super.onStart();
+        callPresenter.setCallCallbacks(callCallbacks);
+    }
+    */
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // callPresenter.removeCallCallbacks(callCallbacks);
+        callPresenter.endCall();
     }
 
     @Override
@@ -174,6 +208,8 @@ public class FourButtonsActivity extends AppCompatActivity {
             if (resultCode == Activity.RESULT_OK) { // Group was selected
                 int pos = data.getIntExtra(GROUP_TAG, 0);
                 selectedGroup = presentersManager.getGroupPresenter().getGroupList().get(pos);
+                String msg = "Chosen group: " + selectedGroup.getGroup().getDisplayName();
+                chosenGroupTextView.setText(msg);
                 selectedGroup.setUnSelected(); // so it would be choose-able again in the groups view
                 if (!isGroupFound(callOptionsList, selectedGroup.getGroup().getDisplayName())) {
                     callOptionsList.add(selectedGroup);
@@ -181,7 +217,6 @@ public class FourButtonsActivity extends AppCompatActivity {
                     findViewById(R.id.call_button).setEnabled(true);
                     adapter.notifyDataSetChanged();
                     clickedCallOptionPosition = NO_OPTION_SELECTED;
-
                 }
                 else {
                     Toast.makeText(this, "Group already chosen", Toast.LENGTH_SHORT).show();
@@ -193,6 +228,7 @@ public class FourButtonsActivity extends AppCompatActivity {
                 setCallOptionsNameList();
                 adapter.notifyDataSetChanged();
                 selectedGroup = null;
+                chosenGroupTextView.setText(NO_GROUPS_CHOSEN);
                 findViewById(R.id.call_button).setEnabled(false);
                 clickedCallOptionPosition = NO_OPTION_SELECTED;
             }
@@ -282,6 +318,8 @@ public class FourButtonsActivity extends AppCompatActivity {
                     // view.findViewById(R.id.select_button).setEnabled(true);
                     view.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                     selectedGroup = clickedGroup;
+                    String msg = "Chosen group: " + selectedGroup.getGroup().getDisplayName();
+                    chosenGroupTextView.setText(msg);
                 }
 
                 // unselecting all the rest of the groups in the list

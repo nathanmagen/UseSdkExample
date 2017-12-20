@@ -40,6 +40,10 @@ public class CallPresenter {
         callModule.addCallCallbacks(callCallbacks);
     }
 
+    public void removeCallCallbacks(CallCallbacks callCallbacks) {
+        callModule.removeCallCallbacks(callCallbacks);
+    }
+
     public void endCall() {
         callModule.endCall();
     }
