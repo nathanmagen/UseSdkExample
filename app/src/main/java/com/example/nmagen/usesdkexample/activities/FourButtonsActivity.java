@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.MobileTornado.sdk.model.CallCallbacks;
 import com.MobileTornado.sdk.model.data.CallInfo;
 import com.MobileTornado.sdk.model.data.Contact;
+import com.MobileTornado.sdk.model.data.Group;
 import com.MobileTornado.sdk.model.data.UserState;
 import com.example.nmagen.usesdkexample.R;
 import com.example.nmagen.usesdkexample.adapters.ListToViewAdapter;
@@ -214,7 +215,12 @@ public class FourButtonsActivity extends AppCompatActivity {
                     callOptionsList.add(selectedGroup);
                     setCallOptionsNameList();
                     findViewById(R.id.call_button).setEnabled(true);
-                    findViewById(R.id.msgButton).setEnabled(true);
+                    if (selectedGroup.getGroup().getType() != Group.Type.PERSONAL) {
+                        findViewById(R.id.msgButton).setEnabled(true);
+                    }
+                    else {
+                        findViewById(R.id.msgButton).setEnabled(false);
+                    }
                     adapter.notifyDataSetChanged();
                     clickedCallOptionPosition = NO_OPTION_SELECTED;
                 }
@@ -319,9 +325,15 @@ public class FourButtonsActivity extends AppCompatActivity {
                     callButt.setEnabled(true);
                 }
 
-                findViewById(R.id.msgButton).setEnabled(true);
+
 
                 AppGroup clickedGroup = callOptionsList.get(position);
+                if (clickedGroup.getGroup().getType() != Group.Type.PERSONAL) {
+                    findViewById(R.id.msgButton).setEnabled(true);
+                }
+                else {
+                    findViewById(R.id.msgButton).setEnabled(false);
+                }
                 if (!clickedGroup.isSelected()) {
                     clickedGroup.setSelected();
                     // view.findViewById(R.id.select_button).setEnabled(true);
