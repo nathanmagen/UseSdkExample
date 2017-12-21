@@ -1,6 +1,7 @@
 package com.example.nmagen.usesdkexample.presenters;
 
 
+
 /**
  * Created by nmagen on 29/11/2017.
  */
@@ -11,6 +12,7 @@ public class PresentersManager {
     private  GroupPresenter groupPresenter = null;
     private CallPresenter callPresenter = null;
     private SOSPresenter sosPresenter = null;
+    private MessagePresenter messagePresenter = null;
 
     public static PresentersManager getInstance() {
         if (presentersManager == null) {
@@ -23,6 +25,7 @@ public class PresentersManager {
         groupPresenter = new GroupPresenter();
         callPresenter = new CallPresenter();
         sosPresenter = new SOSPresenter();
+        messagePresenter = new MessagePresenter();
     }
 
     public ClientPresenter getClientPresenter() {
@@ -39,5 +42,9 @@ public class PresentersManager {
 
     public SOSPresenter getSosPresenter() {
         return sosPresenter;
+    }
+
+    public MessagePresenter getMessagePresenter() {
+        return messagePresenter;
     }
 }

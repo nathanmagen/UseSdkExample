@@ -3,6 +3,7 @@
     package="com.example.nmagen.usesdkexample">
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <application
         android:allowBackup="true"
@@ -24,8 +25,9 @@
         <activity android:name=".activities.GroupListActivity" />
         <activity
             android:name=".activities.AddGroupActivity"
-            android:windowSoftInputMode="stateVisible"/>
-        <activity android:name=".activities.ShowMembersActivity"/>
+            android:windowSoftInputMode="stateVisible" />
+        <activity android:name=".activities.ShowMembersActivity" />
+        <activity android:name=".activities.MessagingActivity"></activity>
     </application>
 
 </manifest>

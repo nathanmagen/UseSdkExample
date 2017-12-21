@@ -1,6 +1,7 @@
 package com.example.nmagen.usesdkexample.presenters;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.util.Log;
 
 import com.MobileTornado.sdk.TornadoClient;
@@ -8,6 +9,7 @@ import com.MobileTornado.sdk.TornadoConfig;
 import com.MobileTornado.sdk.model.Client;
 import com.MobileTornado.sdk.model.ClientCallbacks;
 import com.MobileTornado.sdk.model.data.UserState;
+import com.example.nmagen.usesdkexample.R;
 
 /**
  * Created by nmagen on 26/11/2017.
@@ -38,12 +40,20 @@ public class ClientPresenter {
         return client.isSignedIn();
     }
 
-    public void signOout() {
+    public void signOut() {
         client.signOut();
     }
 
     public void setState(UserState state) {
         client.setUserState(state);
+    }
+
+    public String getName() {
+        return client.getUser().getName();
+    }
+
+    public long getId() {
+        return client.getUser().getId();
     }
 
     private ClientCallbacks clientCallbacks = new ClientCallbacks() {

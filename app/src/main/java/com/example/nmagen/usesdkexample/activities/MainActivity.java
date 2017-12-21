@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (clientPresenter.isSignedIn()) {
-            clientPresenter.signOout();
+            clientPresenter.signOut();
             finish();
         }
     }

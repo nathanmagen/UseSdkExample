@@ -134,4 +134,5 @@ public class GroupPresenter {
         LargeGroupContactsInfo largeGroupContactsInfo = contactsModule.getCurrentLargeGroupCallContactsInfo();
         return largeGroupContactsInfo.getActiveContactsCount();
     }
+
 }

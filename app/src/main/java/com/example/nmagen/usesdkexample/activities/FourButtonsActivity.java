@@ -35,10 +35,9 @@ import com.example.nmagen.usesdkexample.presenters.SOSPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.function.Predicate;
 
 public class FourButtonsActivity extends AppCompatActivity {
+    public static final String MSG_GROUP_NAME_KEY = "com.example.nmagen.usesdkexample.activities";
     public static final String GROUP_TAG = "Group Tag";
     public static final String REMOVE_GROUP_TAG = "Remove group tag";
     public static final int REQUEST_CODE = 1;
@@ -215,6 +214,7 @@ public class FourButtonsActivity extends AppCompatActivity {
                     callOptionsList.add(selectedGroup);
                     setCallOptionsNameList();
                     findViewById(R.id.call_button).setEnabled(true);
+                    findViewById(R.id.msgButton).setEnabled(true);
                     adapter.notifyDataSetChanged();
                     clickedCallOptionPosition = NO_OPTION_SELECTED;
                 }
@@ -230,6 +230,7 @@ public class FourButtonsActivity extends AppCompatActivity {
                 selectedGroup = null;
                 chosenGroupTextView.setText(NO_GROUPS_CHOSEN);
                 findViewById(R.id.call_button).setEnabled(false);
+                findViewById(R.id.msgButton).setEnabled(false);
                 clickedCallOptionPosition = NO_OPTION_SELECTED;
             }
         }
@@ -279,6 +280,12 @@ public class FourButtonsActivity extends AppCompatActivity {
         startActivityForResult(intent, REQUEST_CODE);
     }
 
+    public void onClickMsg(View view) {
+        Intent intent = new Intent(this, MessagingActivity.class);
+        intent.putExtra(MSG_GROUP_NAME_KEY, selectedGroup.getGroup().getDisplayName());
+        startActivity(intent);
+    }
+
     private void setCallOptionsNameList() {
         int size = callOptionsList.size();
         callOptionsNameList.clear();
@@ -311,6 +318,8 @@ public class FourButtonsActivity extends AppCompatActivity {
                 if (!callButt.isEnabled()) {
                     callButt.setEnabled(true);
                 }
+
+                findViewById(R.id.msgButton).setEnabled(true);
 
                 AppGroup clickedGroup = callOptionsList.get(position);
                 if (!clickedGroup.isSelected()) {
@@ -368,6 +377,9 @@ public class FourButtonsActivity extends AppCompatActivity {
         setCallOptionsNameList();
         adapter.notifyDataSetChanged();
         findViewById(R.id.call_button).setEnabled(false);
+        findViewById(R.id.msgButton).setEnabled(false);
+        selectedGroup = null;
+        chosenGroupTextView.setText(NO_GROUPS_CHOSEN);
         view.setVisibility(View.INVISIBLE);
         clickedCallOptionPosition = NO_OPTION_SELECTED;
         longClickedOnPosition = NO_OPTION_SELECTED;
