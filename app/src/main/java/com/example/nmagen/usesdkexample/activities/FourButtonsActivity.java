@@ -1,7 +1,10 @@
 package com.example.nmagen.usesdkexample.activities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +17,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -21,9 +26,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.MobileTornado.sdk.model.CallCallbacks;
+import com.MobileTornado.sdk.model.MessagingModule;
 import com.MobileTornado.sdk.model.data.CallInfo;
 import com.MobileTornado.sdk.model.data.Contact;
+import com.MobileTornado.sdk.model.data.Conversation;
 import com.MobileTornado.sdk.model.data.Group;
+import com.MobileTornado.sdk.model.data.Message;
 import com.MobileTornado.sdk.model.data.UserState;
 import com.example.nmagen.usesdkexample.R;
 import com.example.nmagen.usesdkexample.adapters.ListToViewAdapter;
@@ -31,11 +39,16 @@ import com.example.nmagen.usesdkexample.data.AppGroup;
 import com.example.nmagen.usesdkexample.listeners.RecyclerTouchListener;
 import com.example.nmagen.usesdkexample.presenters.CallPresenter;
 import com.example.nmagen.usesdkexample.presenters.GroupPresenter;
+import com.example.nmagen.usesdkexample.presenters.MessagePresenter;
 import com.example.nmagen.usesdkexample.presenters.PresentersManager;
 import com.example.nmagen.usesdkexample.presenters.SOSPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.nmagen.usesdkexample.activities.MessagingActivity.LAST_CHAT_FILE_NAME;
+import static com.example.nmagen.usesdkexample.activities.MessagingActivity.VIEW_STRING_KEY;
+import static com.example.nmagen.usesdkexample.activities.MessagingActivity.getTime;
 
 public class FourButtonsActivity extends AppCompatActivity {
     public static final String MSG_GROUP_NAME_KEY = "com.example.nmagen.usesdkexample.activities";
@@ -55,8 +68,11 @@ public class FourButtonsActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
+    private PowerManager powerManager;
+    private PowerManager.WakeLock wakeLock;
     private PresentersManager presentersManager = PresentersManager.getInstance();
     private CallPresenter callPresenter = presentersManager.getCallPresenter();
+    private MessagePresenter messagePresenter = presentersManager.getMessagePresenter();
     private CallCallbacks callCallbacks = new CallCallbacks() {
         @Override
         public void onIncomingCall(@NonNull CallInfo callInfo) {
@@ -74,6 +90,14 @@ public class FourButtonsActivity extends AppCompatActivity {
             findViewById(R.id.call_button).setEnabled(false);
             findViewById(R.id.end_call_button).setEnabled(true);
             String msg = "On call with " + callInfo.getName();
+
+
+            // Turning on the screen if it sleeps
+            powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+            wakeLock = powerManager.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "tag");
+            wakeLock.acquire();
+            unlockScreen();
+
             chosenGroupTextView.setText(msg);
             if ( callInfo.isLargeGroupCall()) {
                 int active = presentersManager.getGroupPresenter().getLargeGroupCallActiveContactsCount();
@@ -123,6 +147,24 @@ public class FourButtonsActivity extends AppCompatActivity {
         }
     };
 
+    // Adding a message listener to handle a situation of incoming message on this activity
+    private MessagingModule.NewMessageListener newMessageListener = new MessagingModule.NewMessageListener() {
+        @Override
+        public void onNewMessage(Conversation conversation, Message message) {
+            String dispMsg = message.getSenderName() + ": " + message.getText();
+            Toast.makeText(getApplicationContext(),"IM from " + dispMsg, Toast.LENGTH_SHORT).show();
+
+            // Updating the chat string saved in shared preferences
+            dispMsg += (" " + getTime() + "\n");
+            SharedPreferences sharedPreferences = getSharedPreferences(LAST_CHAT_FILE_NAME, Context.MODE_PRIVATE);
+            String lastViewText = sharedPreferences.getString(VIEW_STRING_KEY, "");
+            lastViewText += dispMsg;
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(VIEW_STRING_KEY, lastViewText);
+            editor.apply();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,6 +179,7 @@ public class FourButtonsActivity extends AppCompatActivity {
         progressBar.setVisibility(View.INVISIBLE);
 
         callPresenter.setCallCallbacks(callCallbacks);
+        // messagePresenter.addNewMessageListener(newMessageListener);
 
         Button pttButton = findViewById(R.id.ptt_button); // assigning functionality to ptt button for pressing and releasing
         pttButton.setOnTouchListener(new View.OnTouchListener() {
@@ -176,6 +219,12 @@ public class FourButtonsActivity extends AppCompatActivity {
         super.onPause();
         // callPresenter.removeCallCallbacks(callCallbacks);
         callPresenter.endCall();
+        messagePresenter.removeNewMessagesListener(newMessageListener);
+        /*
+        if (wakeLock != null) {
+            wakeLock.release();
+        }
+        */
     }
 
     @Override
@@ -183,6 +232,7 @@ public class FourButtonsActivity extends AppCompatActivity {
         super.onResume();
         progressBar.setVisibility(View.VISIBLE);
         presentersManager.getClientPresenter().setState(UserState.ONLINE);
+        messagePresenter.addNewMessageListener(newMessageListener);
         progressBar.setVisibility(View.INVISIBLE);
     }
 
@@ -431,5 +481,12 @@ public class FourButtonsActivity extends AppCompatActivity {
             }
         }
         return false;
+    }
+
+    private void unlockScreen() {
+        Window window = this.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+        window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+        window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
     }
 }
