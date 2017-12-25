@@ -44,13 +44,18 @@ import com.example.nmagen.usesdkexample.presenters.PresentersManager;
 import com.example.nmagen.usesdkexample.presenters.SOSPresenter;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import static com.example.nmagen.usesdkexample.activities.MessagingActivity.LAST_CHAT_FILE_NAME;
 import static com.example.nmagen.usesdkexample.activities.MessagingActivity.VIEW_STRING_KEY;
 import static com.example.nmagen.usesdkexample.activities.MessagingActivity.getTime;
 
 public class FourButtonsActivity extends AppCompatActivity {
+    private final String NAME_LIST_TAG = "name list tag";
     public static final String MSG_GROUP_NAME_KEY = "com.example.nmagen.usesdkexample.activities";
     public static final String GROUP_TAG = "Group Tag";
     public static final String REMOVE_GROUP_TAG = "Remove group tag";
@@ -71,6 +76,7 @@ public class FourButtonsActivity extends AppCompatActivity {
     private PowerManager powerManager;
     private PowerManager.WakeLock wakeLock;
     private PresentersManager presentersManager = PresentersManager.getInstance();
+    private GroupPresenter groupPresenter = presentersManager.getGroupPresenter();
     private CallPresenter callPresenter = presentersManager.getCallPresenter();
     private MessagePresenter messagePresenter = presentersManager.getMessagePresenter();
     private CallCallbacks callCallbacks = new CallCallbacks() {
@@ -95,13 +101,13 @@ public class FourButtonsActivity extends AppCompatActivity {
             // Turning on the screen if it sleeps
             powerManager = (PowerManager) getSystemService(POWER_SERVICE);
             wakeLock = powerManager.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "tag");
-            wakeLock.acquire();
+            wakeLock.acquire(300000);
             unlockScreen();
 
             chosenGroupTextView.setText(msg);
             if ( callInfo.isLargeGroupCall()) {
-                int active = presentersManager.getGroupPresenter().getLargeGroupCallActiveContactsCount();
-                int members = presentersManager.getGroupPresenter().getLargeGroupCallContactsCount();
+                int active = groupPresenter.getLargeGroupCallActiveContactsCount();
+                int members = groupPresenter.getLargeGroupCallContactsCount();
                 Toast.makeText(getApplicationContext(), callInfo.getName() + " " + active + "/" + members + " active members", Toast.LENGTH_SHORT).show();
             }
             else {
@@ -202,7 +208,8 @@ public class FourButtonsActivity extends AppCompatActivity {
             }
         });
 
-        setCallOptionsNameList();
+        restoreCallOptionLists();
+        // setCallOptionsNameList();
         setRecyclerView();
     }
 
@@ -236,6 +243,12 @@ public class FourButtonsActivity extends AppCompatActivity {
         progressBar.setVisibility(View.INVISIBLE);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        saveNameList();
+    }
+
     @Override // inflating the menu
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
@@ -257,7 +270,7 @@ public class FourButtonsActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) { // Group was selected
                 int pos = data.getIntExtra(GROUP_TAG, 0);
-                selectedGroup = presentersManager.getGroupPresenter().getGroupList().get(pos);
+                selectedGroup = groupPresenter.getGroupList().get(pos);
                 String msg = "Chosen group: " + selectedGroup.getGroup().getDisplayName();
                 chosenGroupTextView.setText(msg);
                 selectedGroup.setUnSelected(); // so it would be choose-able again in the groups view
@@ -294,7 +307,6 @@ public class FourButtonsActivity extends AppCompatActivity {
 
     public void onCallClick(View view) {
         progressBar.setVisibility(View.VISIBLE);
-        GroupPresenter groupPresenter = presentersManager.getGroupPresenter();
 
         if (groupPresenter.isGroupAvailable(selectedGroup)) {
             if (!callPresenter.callGroup(selectedGroup)) {
@@ -488,5 +500,35 @@ public class FourButtonsActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
         window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+    }
+
+    private void saveNameList() {
+        SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Set<String> nameSet = new HashSet<>(callOptionsNameList);
+        editor.putStringSet(NAME_LIST_TAG, nameSet);
+        editor.commit();
+    }
+
+    private void restoreCallOptionLists() {
+        SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        Set<String> nameSet = sharedPreferences.getStringSet(NAME_LIST_TAG, new HashSet<String>());
+        callOptionsNameList = new ArrayList<String>(nameSet);
+
+        if (!callOptionsNameList.isEmpty()) {
+            restoreListFromNameList();
+        }
+        else {
+            callOptionsNameList.add(NO_GROUPS_CHOSEN);
+        }
+    }
+
+    private void restoreListFromNameList() {
+        for (String groupName: callOptionsNameList) {
+            AppGroup candidateGroup = groupPresenter.getGroupByName(groupName);
+            if (candidateGroup != null) {
+                callOptionsList.add(candidateGroup);
+            }
+        }
     }
 }

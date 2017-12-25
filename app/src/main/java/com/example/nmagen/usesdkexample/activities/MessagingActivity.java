@@ -53,7 +53,7 @@ public class MessagingActivity extends AppCompatActivity {
                     msgDisplayView.append(dispMsg);
                 }
                 else {
-                    appendColorStrig(dispMsg, R.color.RoyalBlue);
+                    appendColorString(dispMsg, R.color.RoyalBlue);
                 }
                 msgDisplayView.append("\n");
                 // messagePresenter.markMessageAsRead(message);
@@ -122,7 +122,7 @@ public class MessagingActivity extends AppCompatActivity {
         callPresenter.setCallCallbacks(callCallbacks);
 
         String msgGroupName = getIntent().getStringExtra(FourButtonsActivity.MSG_GROUP_NAME_KEY);
-
+        ((TextView) findViewById(R.id.messaeGroupNameTextView)).setText(msgGroupName); // Setting the group name to view
         AppGroup selectedGroup = groupPresenter.getGroupByName(msgGroupName); // Getting the group by it's name
 
         if (groupPresenter.isGroupAvailable(selectedGroup)) {
@@ -178,7 +178,7 @@ public class MessagingActivity extends AppCompatActivity {
         String sndMsg = curMsgBox.getText().toString();
         if (messagePresenter.sendMessage(sndMsg)) {
             String dispMsg = MY_NAME + ": " + sndMsg + " " + getTime();
-            appendColorStrig(dispMsg, R.color.Crimson);
+            appendColorString(dispMsg, R.color.Crimson);
             msgDisplayView.append("\n");
             curMsgBox.setText("");
         }
@@ -206,7 +206,7 @@ public class MessagingActivity extends AppCompatActivity {
         return simpleDateFormat.format(Calendar.getInstance().getTime());
     }
 
-    private void appendColorStrig(String str, int color) {
+    private void appendColorString(String str, int color) {
         str = "<font color='" + getResources().getColor(color) + "'>" + str + "</font>";
         msgDisplayView.append(Html.fromHtml(str));
     }
